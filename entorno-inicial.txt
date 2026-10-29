@@ -1,0 +1,19 @@
+Fecha:
+Thu Oct 29 12:02:46 -03 2026
+
+Arquitectura:
+arm64
+
+macOS:
+ProductName:		macOS
+ProductVersion:		27.2
+BuildVersion:		26B123
+
+Git:
+git version 2.54.0 (Apple Git-157)
+
+Docker:
+Docker version 29.9.2, build a82e528
+
+Docker Compose:
+Docker Compose version v5.6.1
