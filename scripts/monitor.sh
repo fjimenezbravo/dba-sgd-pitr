@@ -2,7 +2,7 @@
 # Monitor de solo lectura para la demostracion: consulta ambas instancias
 # PostgreSQL cada pocos segundos y las compara con la foto tomada justo antes
 # del incidente (etapa 3). Muestra disponibilidad, estados de las
-# postulaciones, la postulacion 50 y el archivado de WAL.
+# postulaciones, la postulacion 50 y si el archivado de WAL esta al dia.
 # No modifica nada: la garantia de integridad la entrega 08_validar_integridad.sh.
 #
 # Uso: bash scripts/monitor.sh          (se actualiza cada 2 s; Ctrl+C para salir)
@@ -62,13 +62,23 @@ leer_instancia() {
   echo "ok|$fila"
 }
 
+# Estado actual del archivado, no el historial de fallos:
+#   al_dia    el ultimo archivado correcto es posterior al ultimo fallo
+#   fallando  el ultimo fallo es posterior al ultimo archivado correcto
+#   esperando aun no se archiva nada (antes de crear la stanza en la etapa 1)
+# Linea "estado|ultimo_wal|segundos_desde_archivado|epoch_ultimo_fallo"
 leer_archivado() {
   grep -qx postgres <<< "$EN_EJECUCION" || return
   "${COMPOSE[@]}" exec -T -e PGCONNECT_TIMEOUT=2 postgres \
     psql -X -At -F '|' -U postgres -d postulaciones_db -c \
-    "SELECT COALESCE(last_archived_wal, '-'),
+    "SELECT CASE
+              WHEN archived_count = 0 THEN 'esperando'
+              WHEN last_failed_time > last_archived_time THEN 'fallando'
+              ELSE 'al_dia'
+            END,
+            COALESCE(last_archived_wal, '-'),
             COALESCE(EXTRACT(EPOCH FROM now() - last_archived_time)::int::text, '-'),
-            failed_count
+            COALESCE(EXTRACT(EPOCH FROM last_failed_time)::bigint::text, '')
      FROM pg_stat_archiver;" 2>/dev/null
 }
 
@@ -170,7 +180,7 @@ columna() {
 
 dibujar() {
   local principal recovery foto archivado validacion inicio i salida
-  local wal edad fallos val hora_val f_estado f_hora f_he f_xid
+  local estado_arch wal edad fallo val hora_val f_estado f_hora f_he f_xid
   EN_EJECUCION="$("${COMPOSE[@]}" ps --status running --services 2>/dev/null)"
   principal="$(leer_instancia postgres)"
   recovery="$(leer_instancia recovery)"
@@ -213,13 +223,20 @@ dibujar() {
   fi
 
   if [[ -n "$archivado" ]]; then
-    IFS='|' read -r wal edad fallos <<< "$archivado"
+    IFS='|' read -r estado_arch wal edad fallo <<< "$archivado"
     if [[ "$edad" =~ ^[0-9]+$ && "$edad" -ge 120 ]]; then
       edad="$((edad / 60)) min"
     else
       edad="${edad} s"
     fi
-    salida+=" WAL archivado: ${wal} ${GRIS}(hace ${edad} · fallos ${fallos})${NORMAL}\n"
+    case "$estado_arch" in
+      al_dia)
+        salida+=" WAL archivado: ${wal} ${GRIS}· hace ${edad} ·${NORMAL} ${VERDE}✓ al día${NORMAL}\n" ;;
+      fallando)
+        salida+=" WAL archivado: ${wal} · ${ROJO}✗ FALLANDO desde $(date -r "$fallo" '+%H:%M:%S')${NORMAL}\n" ;;
+      *)
+        salida+=" WAL archivado: ${AMARILLO}◐ esperando el repositorio (etapa 1)${NORMAL}\n" ;;
+    esac
   else
     salida+=" WAL archivado: ${GRIS}sin datos${NORMAL}\n"
   fi
