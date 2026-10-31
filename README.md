@@ -150,7 +150,7 @@ Un respaldo que no se ha restaurado no está probado. Propongo:
 ## 8. Uso de IA y material de presentación
 
 - **IA:** cómo la usé, qué verifiqué y qué no delegué, en [`ai-logs/uso_de_ia.md`](ai-logs/uso_de_ia.md). Los registros completos están en `ai-logs/`.
-- **Presentación:** [`presentation/Volver_al_minuto_anterior_v5.pptx`](presentation/Volver_al_minuto_anterior_v5.pptx) (18 láminas, con notas del orador) y el guion minuto a minuto con preguntas probables en [`presentation/guion_presentacion.md`](presentation/guion_presentacion.md).
+- **Presentación:** [`presentation/Volver_al_minuto_anterior_v5.pptx`](presentation/Volver_al_minuto_anterior_v5.pptx) (18 láminas, con notas del orador).
 
 ## 9. Estructura del repositorio
 
@@ -161,7 +161,7 @@ Un respaldo que no se ha restaurado no está probado. Propongo:
 | `sql/` | Esquema y 100 postulaciones ficticias (se cargan al iniciar el contenedor). |
 | `config/`, `Dockerfile`, `compose.demo.yaml` | PostgreSQL 17 + pgBackRest y su configuración. |
 | `results/` | Corrida de referencia (31-oct, 11:35) y `pruebas_objetivo/` (recuperación por hora y por restore point). |
-| `presentation/` | Presentación y guion. |
+| `presentation/` | Presentación con notas del orador. |
 | `ai-logs/` | Registro completo de la conversación con IA y resumen de su uso. |
 | `legacy/` | No se publica (ignorado por git): versiones anteriores y corridas de ensayo, comprimidas. |
 

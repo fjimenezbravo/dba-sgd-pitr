@@ -61,7 +61,7 @@ La idea de un monitor visual llegó de otra fuente. Antes de implementarlo, lo e
 
 - Las decisiones de alcance: qué construir, qué dejar fuera y qué documentar como límite.
 - La elección de qué propuestas aplicar y cuáles descartar.
-- La presentación ante el comité y las respuestas a sus preguntas. El guion (`presentation/guion_presentacion.md`) es una guía; las respuestas las doy con mis palabras.
+- La presentación ante el comité y las respuestas a sus preguntas, que doy con mis palabras.
 
 ## Qué contienen los registros
 

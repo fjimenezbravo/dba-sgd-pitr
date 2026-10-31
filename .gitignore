@@ -25,3 +25,9 @@ results/post_incidente_csv.path
 
 # Archivos obsoletos comprimidos (no se publican)
 legacy/
+
+# Material personal de ensayo (no es parte de la entrega)
+presentation/guion_presentacion.md
+
+# Archivos de bloqueo de Office mientras un documento está abierto
+~$*
