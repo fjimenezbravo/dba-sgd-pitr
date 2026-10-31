@@ -44,10 +44,11 @@ CONSULTA="SELECT pg_is_in_recovery(),
   COUNT(*) FILTER (WHERE estado = 'pendiente'),
   COALESCE((SELECT estado FROM postulaciones WHERE id = 50), '-'),
   (SELECT timeline_id FROM pg_control_checkpoint()),
-  EXTRACT(EPOCH FROM pg_postmaster_start_time())::bigint
+  EXTRACT(EPOCH FROM pg_postmaster_start_time())::bigint,
+  COUNT(*) FILTER (WHERE observacion = 'POST_INCIDENTE_RECUPERABLE')
 FROM postulaciones;"
 
-# Linea "estado|recovery|total|rech|apro|pres|enrev|pend|p50|timeline|inicio"
+# Linea "estado|recovery|total|rech|apro|pres|enrev|pend|p50|timeline|inicio|posteriores"
 leer_instancia() {
   local servicio="$1" fila
   if ! grep -qx "$servicio" <<< "$EN_EJECUCION"; then
@@ -116,7 +117,7 @@ leer_validacion() {
   if [[ -z "$ultimo" || ! "$ultimo" -nt "$RESTORE_ENV" ]]; then
     echo "pendiente"
   elif grep -q '^CORRECTO' "$ultimo"; then
-    echo "CORRECTO|$(date -r "$ultimo" '+%H:%M:%S')"
+    echo "CORRECTO|$(date -r "$ultimo" '+%H:%M:%S')|$(sed -n 's/^Recovery: *\([0-9]*\) registros.*/\1/p' "$ultimo" | head -n 1)"
   else
     echo "ERROR|$(date -r "$ultimo" '+%H:%M:%S')"
   fi
@@ -180,7 +181,7 @@ columna() {
 
 dibujar() {
   local principal recovery foto archivado validacion inicio i salida
-  local estado_arch wal edad fallo val hora_val f_estado f_hora f_he f_xid
+  local estado_arch wal edad fallo val hora_val n_val f_estado f_hora f_he f_xid
   EN_EJECUCION="$("${COMPOSE[@]}" ps --status running --services 2>/dev/null)"
   principal="$(leer_instancia postgres)"
   recovery="$(leer_instancia recovery)"
@@ -241,11 +242,29 @@ dibujar() {
     salida+=" WAL archivado: ${GRIS}sin datos${NORMAL}\n"
   fi
 
-  IFS='|' read -r val hora_val <<< "$validacion"
+  # Hitos: el PITR devuelve las originales; las posteriores al incidente las
+  # reincorpora la reconciliacion (etapa 6); la etapa 7 las compara con la foto.
+  local r_estado r_recov r_total r_post originales
+  IFS='|' read -r r_estado r_recov r_total _ _ _ _ _ _ _ _ r_post <<< "$recovery"
+  salida+="\n ${NEGRITA}Hitos de la recuperación${NORMAL}\n"
+  if [[ "$r_estado" == "ok" && "$r_recov" == "f" ]]; then
+    originales=$((r_total - r_post))
+    salida+=" 1 $(celda "PITR" 16)${VERDE}✓${NORMAL} ${originales} originales restauradas\n"
+  elif [[ "$r_estado" == "ok" || "$r_estado" == "iniciando" ]]; then
+    salida+=" 1 $(celda "PITR" 16)${AMARILLO}◐ aplicando WAL${NORMAL}\n"
+  else
+    salida+=" 1 $(celda "PITR" 16)${GRIS}pendiente${NORMAL}\n"
+  fi
+  if [[ "$r_estado" == "ok" && "$r_recov" == "f" && "${r_post:-0}" -gt 0 ]]; then
+    salida+=" 2 $(celda "Reconciliación" 16)${VERDE}✓${NORMAL} +${r_post} posteriores reincorporadas\n"
+  else
+    salida+=" 2 $(celda "Reconciliación" 16)${GRIS}pendiente${NORMAL}\n"
+  fi
+  IFS='|' read -r val hora_val n_val <<< "$validacion"
   case "$val" in
-    CORRECTO) salida+=" Validación etapa 7: ${VERDE}CORRECTO${NORMAL} ${GRIS}(${hora_val})${NORMAL}\n" ;;
-    ERROR)    salida+=" Validación etapa 7: ${ROJO}ERROR${NORMAL} ${GRIS}(${hora_val})${NORMAL}\n" ;;
-    *)        salida+=" Validación etapa 7: ${GRIS}pendiente${NORMAL}\n" ;;
+    CORRECTO) salida+=" 3 $(celda "Validación" 16)${VERDE}✓ CORRECTO${NORMAL} · ${n_val:-100}/${n_val:-100} idénticas a la foto\n" ;;
+    ERROR)    salida+=" 3 $(celda "Validación" 16)${ROJO}✗ ERROR: no coincide con la foto${NORMAL}\n" ;;
+    *)        salida+=" 3 $(celda "Validación" 16)${GRIS}pendiente${NORMAL}\n" ;;
   esac
 
   if [[ "$UNA_VEZ" -eq 0 ]]; then
