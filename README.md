@@ -20,6 +20,14 @@ cp .env.example .env        # y definir POSTGRES_PASSWORD
 ./ejecutar_recuperacion.sh --auto   # sin pausas (grabación de respaldo)
 ```
 
+En otra terminal, durante la demo, un monitor de solo lectura muestra ambas bases cada 2 s: disponibilidad, estados de las postulaciones, la postulación 50, el archivado de WAL y el resultado de la validación de la etapa 7:
+
+```bash
+bash scripts/monitor.sh
+```
+
+El monitor solo consulta; la garantía de integridad la entrega `08_validar_integridad.sh`.
+
 El script borra el laboratorio anterior (`docker compose down --volumes` del proyecto `dba-sgd-pitr-demo`), construye la imagen y ejecuta las 7 etapas. Cada etapa deja su evidencia en `results/`.
 
 Para recuperar con otro objetivo: `TARGET_TYPE=time` (hora del incidente) o `TARGET_TYPE=name` (restore point preventivo, plan B) antes de `bash scripts/06_restaurar_pitr.sh`. Antes hay que eliminar el contenedor `recovery` y su volumen.
