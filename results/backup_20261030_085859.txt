@@ -1,0 +1,21 @@
+=== BACKUP COMPLETO PostgreSQL / pgBackRest ===
+Fri Oct 30 08:58:59 -03 2026
+
+[1] Verificando PostgreSQL
+/var/run/postgresql:5432 - accepting connections
+
+[2] Verificando registros iniciales
+ total 
+-------
+   100
+(1 row)
+
+
+[3] Creando backup FULL
+2026-10-30 11:58:59.658 P00   INFO: backup command begin 2.60.0: --exec-id=346-252e30f0 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --pg1-port=5432 --pg1-user=postgres --process-max=2 --repo1-path=/var/lib/pgbackrest --repo1-retention-full=2 --stanza=main --start-fast --type=full
+2026-10-30 11:58:59.663 P00  ERROR: [055]: unable to load info file '/var/lib/pgbackrest/backup/main/backup.info' or '/var/lib/pgbackrest/backup/main/backup.info.copy':
+                                    FileMissingError: unable to open missing file '/var/lib/pgbackrest/backup/main/backup.info' for read
+                                    FileMissingError: unable to open missing file '/var/lib/pgbackrest/backup/main/backup.info.copy' for read
+                                    HINT: backup.info cannot be opened and is required to perform a backup.
+                                    HINT: has a stanza-create been performed?
+2026-10-30 11:58:59.663 P00   INFO: backup command end: aborted with exception [055]

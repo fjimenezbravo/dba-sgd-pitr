@@ -1,0 +1,5 @@
+=== REGISTROS LEGITIMOS POSTERIORES AL INCIDENTE ===
+Fri Oct 30 09:06:56 -03 2026
+
+[1] Validando estado del incidente y registros previos
+ERROR: ya existe results/post_incidente.csv. Se cancela para proteger la evidencia.

@@ -1,0 +1,4 @@
+recovery-1  | 2026-10-29 19:15:20.505 UTC [29] LOG:  recovery stopping at restore point "pitr_objetivo_20261029", time 2026-10-29 18:22:36.803979+00
+recovery-1  | 2026-10-29 19:15:20.505 UTC [29] LOG:  redo done at 0/14000060 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.33 s
+recovery-1  | 2026-10-29 19:15:20.542 UTC [29] LOG:  archive recovery complete
+recovery-1  | 2026-10-29 19:15:20.553 UTC [1] LOG:  database system is ready to accept connections

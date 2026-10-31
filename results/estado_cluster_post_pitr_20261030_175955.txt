@@ -1,0 +1,3 @@
+Database cluster state:               in production
+Latest checkpoint's TimeLineID:       2
+Latest checkpoint's PrevTimeLineID:   2

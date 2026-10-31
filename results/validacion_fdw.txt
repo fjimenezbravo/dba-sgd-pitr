@@ -1,0 +1,5 @@
+Validación FDW - 2026-10-29 18:12:02 -03
+========================================
+origen|recuperacion|diferencias
+3|3|0
+OK: tres registros comparados y cero diferencias.

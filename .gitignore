@@ -1,0 +1,24 @@
+# Credenciales y variables locales
+.env
+.env.*
+!.env.example
+
+# Copias de respaldo y archivos temporales
+*.bak
+*.tmp
+*~
+
+# Archivos del sistema y editores
+.DS_Store
+.AppleDouble
+.vscode/
+.idea/
+
+# Logs locales
+*.log
+
+# Datos operativos de la ejecucion PITR
+results/restore_point.env
+
+# Referencia local al CSV de registros posteriores
+results/post_incidente_csv.path

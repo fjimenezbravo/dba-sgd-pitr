@@ -1,0 +1,11 @@
+=== RESTAURACION PITR POSTGRESQL 17 ===
+viernes, 30 de octubre de 2026, 17:03:18 -03
+Restore point: pitr_objetivo_20261030_170300
+LSN: 0/A0000C8
+
+[1] Comprobando disponibilidad de la base principal
+/var/run/postgresql:5432 - accepting connections
+Base principal disponible.
+
+[2] Comprobando que recovery esté detenido
+ERROR: recovery está ejecutándose. Se cancela para proteger los datos.

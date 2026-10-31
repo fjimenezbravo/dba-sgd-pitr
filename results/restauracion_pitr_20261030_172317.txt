@@ -1,0 +1,52 @@
+=== RESTAURACION PITR POSTGRESQL 17 ===
+viernes, 30 de octubre de 2026, 17:23:17 -03
+Restore point: pitr_objetivo_20261030_172302
+LSN: 0/40000C8
+
+[1] Comprobando disponibilidad de la base principal
+/var/run/postgresql:5432 - accepting connections
+Base principal disponible.
+
+[2] Comprobando que recovery esté detenido
+Recovery detenido.
+
+[3] Comprobando destino de restauracion
+ Volume dba-sgd-pitr-demo_pitrdata Creating 
+ Volume dba-sgd-pitr-demo_pitrdata Creating 
+ Volume dba-sgd-pitr-demo_pitrdata Created 
+ Volume dba-sgd-pitr-demo_pitrdata Created 
+ Container dba-sgd-pitr-demo-recovery-run-a2f994926ef6 Creating 
+ Container dba-sgd-pitr-demo-recovery-run-a2f994926ef6 Created 
+Destino vacio y permisos preparados.
+
+[4] Ejecutando restauracion PITR
+ Container dba-sgd-pitr-demo-recovery-run-bdb6139699ac Creating 
+ Container dba-sgd-pitr-demo-recovery-run-bdb6139699ac Created 
+2026-10-30 20:23:17.990 P00   INFO: restore command begin 2.60.0: --exec-id=1-8fb59cd3 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=main --target=pitr_objetivo_20261030_172302 --target-action=promote --type=name
+2026-10-30 20:23:17.994 P00   INFO: repo1: restore backup set 20261030-202251F, recovery will start at 2026-10-30 20:22:51
+2026-10-30 20:23:18.714 P00   INFO: write updated /var/lib/postgresql/data/postgresql.auto.conf
+2026-10-30 20:23:18.721 P00   INFO: restore global/pg_control (performed last to ensure aborted restores cannot be started)
+2026-10-30 20:23:18.721 P00   INFO: restore size = 29.3MB, file total = 1270
+2026-10-30 20:23:18.722 P00   INFO: restore command end: completed successfully (734ms)
+
+[5] Iniciando PostgreSQL restaurado en puerto 5433
+ Container dba-sgd-pitr-demo-recovery-1 Creating 
+ Container dba-sgd-pitr-demo-recovery-1 Created 
+ Container dba-sgd-pitr-demo-recovery-1 Starting 
+ Container dba-sgd-pitr-demo-recovery-1 Started 
+[6] Esperando disponibilidad de PostgreSQL
+/var/run/postgresql:5432 - rejecting connections
+/var/run/postgresql:5432 - accepting connections
+
+[7] Verificando datos restaurados
+ total | rechazadas 
+-------+------------
+   100 |          0
+(1 row)
+
+
+RESTAURACION PITR COMPLETADA
+Inicio epoch: 1793391797
+Fin epoch: 1793391801
+RTO hasta disponibilidad: 4 segundos
+viernes, 30 de octubre de 2026, 17:23:21 -03

@@ -1,0 +1,16 @@
+=== VALIDACION DE INTEGRIDAD DE LOS 100 REGISTROS ORIGINALES ===
+viernes, 30 de octubre de 2026, 17:28:33 -03
+
+[1] Exportando registros originales de la base principal (5432)
+
+[2] Exportando registros originales de la base recuperada (5433)
+
+[3] Comprobando cantidad de filas
+Principal: 100 registros
+Recovery: 100 registros
+
+[4] Comparando campos originales
+CORRECTO: los 100 registros originales coinciden exactamente.
+
+VALIDACION DE INTEGRIDAD COMPLETADA
+viernes, 30 de octubre de 2026, 17:28:33 -03

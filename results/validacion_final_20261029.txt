@@ -1,0 +1,16 @@
+VALIDACION FINAL - LABORATORIO PITR
+Thu Oct 29 20:14:21 -03 2026
+
+ total | afectados | posteriores 
+-------+-----------+-------------
+   103 |         0 |           3
+(1 row)
+
+
+  nombre_postulante   |              cargo              |    region     |     estado      |        observacion         
+----------------------+---------------------------------+---------------+-----------------+----------------------------
+ Registro Posterior 1 | Administrador de Bases de Datos | Metropolitana | en_revision     | POST_INCIDENTE_RECUPERABLE
+ Registro Posterior 2 | Analista de Datos               | Valparaiso    | preseleccionada | POST_INCIDENTE_RECUPERABLE
+ Registro Posterior 3 | Ingeniero de Infraestructura    | Biobio        | pendiente       | POST_INCIDENTE_RECUPERABLE
+(3 rows)
+

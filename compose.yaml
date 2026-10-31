@@ -1,0 +1,59 @@
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dba-sgd-postgres:17-pgbackrest
+    container_name: dba-sgd-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Configura POSTGRES_PASSWORD en .env}
+      POSTGRES_DB: postulaciones_db
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - pgbackrest_repo:/var/lib/pgbackrest
+      - pgbackrest_log:/var/log/pgbackrest
+      - ./config/pgbackrest.conf:/etc/pgbackrest/pgbackrest.conf:ro
+      - ./sql:/docker-entrypoint-initdb.d:ro
+    command:
+      - postgres
+      - -c
+      - archive_mode=on
+      - -c
+      - "archive_command=pgbackrest --stanza=main archive-push %p"
+      - -c
+      - archive_timeout=60s
+      - -c
+      - wal_level=replica
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postulaciones_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  recovery:
+    image: dba-sgd-postgres:17-pgbackrest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Configura POSTGRES_PASSWORD en .env}
+      POSTGRES_DB: postulaciones_db
+      FDW_PASSWORD: ${FDW_PASSWORD:?Configura FDW_PASSWORD en .env}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - pitrdata:/var/lib/postgresql/data
+      - pgbackrest_repo:/var/lib/pgbackrest:ro
+      - ./config/pgbackrest.conf:/etc/pgbackrest/pgbackrest.conf:ro
+    command:
+      - postgres
+      - -c
+      - archive_mode=off
+volumes:
+  pgdata:
+  pgbackrest_repo:
+  pgbackrest_log:
+  pitrdata:
+    external: true
+    name: dba-sgd-pitr_pitrdata

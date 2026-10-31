@@ -1,0 +1,16 @@
+=== CREACION DEL PUNTO DE RECUPERACION PITR ===
+viernes, 30 de octubre de 2026, 17:10:56 -03
+
+[1] Hora del servidor PostgreSQL
+         hora_servidor         
+-------------------------------
+ 2026-10-30 20:10:56.899479+00
+(1 row)
+
+
+[2] Creando restore point: pitr_objetivo_20261030_171056
+Restore point: pitr_objetivo_20261030_171056
+LSN: 0/4000090
+
+PUNTO DE RECUPERACION CREADO CORRECTAMENTE
+viernes, 30 de octubre de 2026, 17:10:56 -03

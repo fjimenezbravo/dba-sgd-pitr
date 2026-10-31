@@ -1,0 +1,15 @@
+ESTADO FINAL DEL CLUSTER RECUPERADO
+Thu Oct 29 20:34:56 -03 2026
+
+ en_recuperacion | lsn_actual | total_registros 
+-----------------+------------+-----------------
+ f               | 0/5037FD8  |             103
+(1 row)
+
+
+Database system identifier:           7702226731851149350
+Database cluster state:               in production
+Latest checkpoint location:           0/5037F28
+Latest checkpoint's REDO location:    0/5037E98
+Latest checkpoint's TimeLineID:       2
+Latest checkpoint's PrevTimeLineID:   2

@@ -1,0 +1,18 @@
+=== BACKUP COMPLETO PostgreSQL / pgBackRest ===
+Fri Oct 30 06:59:14 -03 2026
+
+[1] Verificando PostgreSQL
+/var/run/postgresql:5432 - accepting connections
+
+[2] Verificando registros iniciales
+ total 
+-------
+   100
+(1 row)
+
+
+[3] Creando backup FULL
+2026-10-30 09:59:14.496 P00  ERROR: [031]: the 'backup' command must not be run as the root user
+                                    HINT: running as root can create files that the regular user cannot access, causing later commands to fail.
+                                    HINT: set the 'allow-root' option to allow running this command as root.
+2026-10-30 09:59:14.496 P00   INFO: backup command end: aborted with exception [031]
