@@ -7,6 +7,7 @@ El enunciado pide usar IA y mostrar *"registros reales donde se ve a la persona 
 - **Herramienta:** Claude Code (modelo Claude Opus), sobre el repositorio local.
 - **Rol de la IA:** revisar, proponer, escribir código a pedido y ejecutar pruebas.
 - **Mi rol:** decidir el alcance, aceptar o rechazar propuestas, verificar resultados y presentar. Las decisiones de diseño y de qué entregar son mías.
+- **Antes de esta sesión (29 al 31 de octubre):** la primera versión del laboratorio (entorno, scripts iniciales y la presentación v3) la construí sin IA, con la documentación oficial de PostgreSQL. La IA se usó solo en la sesión del 31-oct registrada en esta carpeta.
 
 ## Mis reglas de uso
 

@@ -1,6 +1,6 @@
 # Registros de conversaciones con IA
 
-La prueba exige incluir los registros **completos** de las conversaciones con IA. El resumen de cómo la usé está en [`uso_de_ia.md`](uso_de_ia.md).
+La prueba exige incluir los registros **completos** de las conversaciones con IA. El resumen de cómo la usé está en [`uso_de_ia.md`](uso_de_ia.md). El trabajo previo, del 29 al 31 de octubre, se hizo sin IA, con la documentación oficial de PostgreSQL; por eso hay un solo registro.
 
 | Archivo | Herramienta | Contenido |
 |---|---|---|
