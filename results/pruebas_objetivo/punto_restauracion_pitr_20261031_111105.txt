@@ -1,0 +1,59 @@
+=== RESTAURACION PITR POSTGRESQL 17 ===
+Sat Oct 31 11:11:05 -03 2026
+Tipo de objetivo: name
+Objetivo: pitr_objetivo_20261031_111036
+
+[1] Comprobando disponibilidad de la base principal
+/var/run/postgresql:5432 - accepting connections
+Base principal disponible.
+
+[2] Comprobando que recovery esté detenido
+Recovery detenido.
+
+[3] Comprobando destino de restauracion
+ Volume dba-sgd-pitr-demo_pitrdata Creating 
+ Volume dba-sgd-pitr-demo_pitrdata Creating 
+ Volume dba-sgd-pitr-demo_pitrdata Created 
+ Volume dba-sgd-pitr-demo_pitrdata Created 
+ Container dba-sgd-pitr-demo-recovery-run-e85a187df6cd Creating 
+ Container dba-sgd-pitr-demo-recovery-run-e85a187df6cd Created 
+Destino vacio y permisos preparados.
+
+[4] Ejecutando restauracion PITR
+ Container dba-sgd-pitr-demo-recovery-run-0baa0e3c4e10 Creating 
+ Container dba-sgd-pitr-demo-recovery-run-0baa0e3c4e10 Created 
+2026-10-31 14:11:05.890 P00   INFO: restore command begin 2.60.0: --exec-id=1-e605b30a --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=main --target=pitr_objetivo_20261031_111036 --target-action=promote --type=name
+2026-10-31 14:11:05.895 P00   INFO: repo1: restore backup set 20261031-141033F, recovery will start at 2026-10-31 14:10:33
+2026-10-31 14:11:06.609 P00   INFO: write updated /var/lib/postgresql/data/postgresql.auto.conf
+2026-10-31 14:11:06.615 P00   INFO: restore global/pg_control (performed last to ensure aborted restores cannot be started)
+2026-10-31 14:11:06.616 P00   INFO: restore size = 29.3MB, file total = 1270
+2026-10-31 14:11:06.617 P00   INFO: restore command end: completed successfully (729ms)
+
+[5] Iniciando PostgreSQL restaurado en puerto 5433
+ Container dba-sgd-pitr-demo-recovery-1 Creating 
+ Container dba-sgd-pitr-demo-recovery-1 Created 
+ Container dba-sgd-pitr-demo-recovery-1 Starting 
+ Container dba-sgd-pitr-demo-recovery-1 Started 
+[6] Esperando fin de la recuperacion y promocion
+Recuperacion terminada y base promovida.
+
+[7] Verificando datos restaurados
+     estado      | count 
+-----------------+-------
+ aprobada        |    10
+ en_revision     |    29
+ pendiente       |    28
+ preseleccionada |    33
+(4 rows)
+
+ id |     estado      |          observacion           
+----+-----------------+--------------------------------
+ 50 | preseleccionada | Registro ficticio de prueba 50
+(1 row)
+
+
+RESTAURACION PITR COMPLETADA
+Inicio epoch: 1793455865
+Fin epoch: 1793455868
+RTO desde inicio de restauracion hasta base promovida: 3 segundos
+Sat Oct 31 11:11:08 -03 2026

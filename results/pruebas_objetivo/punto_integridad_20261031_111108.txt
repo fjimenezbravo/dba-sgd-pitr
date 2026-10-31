@@ -1,0 +1,24 @@
+=== VALIDACION DE INTEGRIDAD DE LOS 100 REGISTROS ORIGINALES ===
+Sat Oct 31 11:11:08 -03 2026
+Referencia: results/antes_incidente_20261031_111036.csv (foto tomada justo antes del UPDATE)
+Columnas comparadas: id, nombre_postulante, cargo, region, estado, creado_en, observacion
+
+[1] Exportando registros originales de la base recuperada (5433)
+
+[2] Comprobando cantidad de filas
+Foto previa: 100 registros
+Recovery:    100 registros
+
+[3] Comparando todas las columnas contra la foto previa
+--- results/antes_incidente_20261031_111036.csv	2026-10-31 11:10:36
++++ /var/folders/7z/6qn_yy_d6qx80krgjk_r6k900000gn/T/tmp.0QX8ERzkLG/recovery.csv	2026-10-31 11:11:08
+@@ -48,7 +48,7 @@
+ 47,Camila Silva,Analista de Datos,Valparaiso,preseleccionada,2026-10-20 16:40:00+00,Registro ficticio de prueba 47
+ 48,Felipe Torres,Ingeniero de Infraestructura,Biobio,pendiente,2026-10-20 16:50:00+00,Registro ficticio de prueba 48
+ 49,Andrea Morales,Administrador de Bases de Datos,Araucania,en_revision,2026-10-20 17:00:00+00,Registro ficticio de prueba 49
+-50,Javier Contreras,Administrador de Sistemas,Los Lagos,aprobada,2026-10-20 17:10:00+00,Revision legitima: aprobada segundos antes del incidente
++50,Javier Contreras,Administrador de Sistemas,Los Lagos,preseleccionada,2026-10-20 17:10:00+00,Registro ficticio de prueba 50
+ 51,Ana Perez,Analista de Datos,Metropolitana,pendiente,2026-10-20 17:20:00+00,Registro ficticio de prueba 51
+ 52,Luis Gonzalez,Ingeniero de Infraestructura,Valparaiso,en_revision,2026-10-20 17:30:00+00,Registro ficticio de prueba 52
+ 53,Maria Soto,Administrador de Bases de Datos,Biobio,preseleccionada,2026-10-20 17:40:00+00,Registro ficticio de prueba 53
+ERROR: la base recuperada no coincide con el estado previo al UPDATE.
