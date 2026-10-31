@@ -1,6 +1,6 @@
 # Pruebas de los tres objetivos de recuperación
 
-Respaldan la lámina 11 de la presentación: *"Cómo sé que quedó justo antes: la postulación 50"*.
+Respaldan la lámina 12 de la presentación: *"Cómo sé que quedó justo antes: la postulación 50"*.
 
 La postulación 50 se aprueba 2 segundos antes del UPDATE sin WHERE. Su estado después de recuperar muestra dónde quedó la base:
 - `preseleccionada`: la recuperación quedó antes de tiempo;

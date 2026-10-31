@@ -49,6 +49,14 @@ Antes de sumar más cambios, pregunté si la solución ya cumplía. La respuesta
 ### Corregir a la IA cuando entendió mal
 Pregunté cómo lo resolverían otros postulantes y la IA lo interpretó como "muchas personas postulando al subsidio" (concurrencia). Aclaré que me refería a los otros candidatos y reorienté la conversación hacia cómo diferenciar la presentación.
 
+### El monitor de la demostración: decisiones por etapas
+La idea de un monitor visual llegó de otra fuente. Antes de implementarlo, lo evalué paso a paso:
+- **Shell en vez de web:** pregunté cuál convenía. Elegí shell: todo en la misma pantalla que la demo, menos piezas que pueden fallar en vivo y coherente con el resto del proyecto.
+- **Datos reales, no adornos:** el monitor solo consulta PostgreSQL y los archivos de evidencia. No muestra cifras escritas a mano.
+- **Errores encontrados al probarlo:** en la corrida completa, el monitor mostraba "CORRECTO" heredado de la corrida anterior antes del incidente, y la primera versión de la columna ANTES nunca mostraba la foto. Ambos se corrigieron antes de publicar.
+- **No ocultar los errores:** propuse ocultar el contador de fallos de archivado porque llamaba la atención. La recomendación fue no esconderlo, sino mostrar el estado actual ("al día" o "FALLANDO"): ocultarlo contradiría mi propia respuesta sobre cómo vigilar los respaldos. Acepté ese criterio.
+- **Separar PITR y reconciliación:** otra sugerencia externa. La acepté porque refuerza la pregunta 3: el PITR no puede traer lo escrito después del error.
+
 ## Lo que no delegué
 
 - Las decisiones de alcance: qué construir, qué dejar fuera y qué documentar como límite.

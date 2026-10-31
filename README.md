@@ -20,17 +20,24 @@ cp .env.example .env        # y definir POSTGRES_PASSWORD
 ./ejecutar_recuperacion.sh --auto   # sin pausas (grabación de respaldo)
 ```
 
-En otra terminal, durante la demo, un monitor de solo lectura muestra cada 2 s tres columnas: **ANTES** (la foto tomada justo antes del error, con su hora, la hora del error y el XID), **PRINCIPAL** y **RECOVERY**. Para cada una muestra disponibilidad, estados de las postulaciones y la postulación 50. Abajo indica si el archivado de WAL está al día y los tres hitos de la recuperación por separado: **PITR** (las 100 originales), **reconciliación** (las 3 posteriores, que el PITR no puede traer) y **validación** (comparación con la foto previa):
+El script borra el laboratorio anterior (`docker compose down --volumes` del proyecto `dba-sgd-pitr-demo`), construye la imagen y ejecuta las 7 etapas. Cada etapa deja su evidencia en `results/`.
+
+Para recuperar con otro objetivo: `TARGET_TYPE=time` (hora del incidente) o `TARGET_TYPE=name` (restore point preventivo, plan B) antes de `bash scripts/06_restaurar_pitr.sh`. Antes hay que eliminar el contenedor `recovery` y su volumen. Las pruebas de los tres objetivos están en `results/pruebas_objetivo/`.
+
+### Monitor de la demostración
+
+En otra terminal, durante la demo (por ejemplo, la pantalla dividida en dos paneles):
 
 ```bash
 bash scripts/monitor.sh
 ```
 
-El monitor solo consulta; la garantía de integridad la entrega `08_validar_integridad.sh`.
+Cada 2 s muestra tres columnas: **ANTES** (la foto tomada justo antes del error, con su hora, la hora del error y el XID), **PRINCIPAL** y **RECOVERY**, con disponibilidad, estados de las postulaciones y la postulación 50. Abajo indica si el archivado de WAL está **al día** y los tres hitos de la recuperación por separado:
+1. **PITR**: las 100 postulaciones originales;
+2. **reconciliación**: las 3 posteriores, que el PITR no puede traer;
+3. **validación**: comparación con la foto previa.
 
-El script borra el laboratorio anterior (`docker compose down --volumes` del proyecto `dba-sgd-pitr-demo`), construye la imagen y ejecuta las 7 etapas. Cada etapa deja su evidencia en `results/`.
-
-Para recuperar con otro objetivo: `TARGET_TYPE=time` (hora del incidente) o `TARGET_TYPE=name` (restore point preventivo, plan B) antes de `bash scripts/06_restaurar_pitr.sh`. Antes hay que eliminar el contenedor `recovery` y su volumen.
+El monitor solo consulta. La garantía de integridad la entrega `08_validar_integridad.sh`.
 
 ## 2. Arquitectura
 
@@ -71,7 +78,7 @@ Prueba en negativo: recuperar con el restore point (`TARGET_TYPE=name`) pierde e
 
 Corrida de referencia: `results/corrida_completa_20261031_113535.txt`.
 
-En esa corrida, `pg_stat_archiver` muestra `failed_count = 2` sobre el primer segmento: PostgreSQL intentó archivar antes de que la etapa 1 creara la stanza. pgBackRest reintentó y el archivado se completó (`pgbackrest check` correcto). En producción la stanza se crea antes de activar `archive_mode`.
+En esa corrida, `pg_stat_archiver` muestra `failed_count = 2` sobre el primer segmento: PostgreSQL intentó archivar antes de que la etapa 1 creara la stanza. pgBackRest reintentó y el archivado se completó (`pgbackrest check` correcto). Por eso el monitor muestra el **estado actual** del archivado (último archivado correcto posterior al último fallo) y no el contador histórico. En producción la stanza se crea antes de activar `archive_mode`.
 
 | Medida | Valor |
 |---|---|
@@ -123,7 +130,7 @@ Limitaciones (decisión consciente):
 **5. ¿Cómo sabría, un martes cualquiera, que los respaldos sirven?**
 Un respaldo que no se ha restaurado no está probado. Propongo:
 - **Diario:** `pgbackrest check` (archiva un WAL de prueba) y `pgbackrest verify` (valida checksums del repositorio).
-- **Alertas** si `pg_stat_archiver.failed_count` sube o si el último respaldo tiene más de 24 h.
+- **Alertas** si el último fallo de archivado es posterior al último archivado correcto (`pg_stat_archiver`, lo mismo que muestra `scripts/monitor.sh`) o si el último respaldo tiene más de 24 h.
 - **Semanal, automatizado:** las etapas 5 y 7 de este repositorio (restaurar en un servidor aparte y validar contra conteos o checksums conocidos), registrando el RTO obtenido.
 
 ## 6. Supuestos y decisiones
@@ -143,9 +150,22 @@ Un respaldo que no se ha restaurado no está probado. Propongo:
 ## 8. Uso de IA y material de presentación
 
 - **IA:** cómo la usé, qué verifiqué y qué no delegué, en [`ai-logs/uso_de_ia.md`](ai-logs/uso_de_ia.md). Los registros completos están en `ai-logs/`.
-- **Presentación:** [`presentation/Volver_al_minuto_anterior_v4.pptx`](presentation/Volver_al_minuto_anterior_v4.pptx) (17 láminas, con notas del orador) y el guion minuto a minuto con preguntas probables en [`presentation/guion_presentacion.md`](presentation/guion_presentacion.md).
+- **Presentación:** [`presentation/Volver_al_minuto_anterior_v5.pptx`](presentation/Volver_al_minuto_anterior_v5.pptx) (18 láminas, con notas del orador) y el guion minuto a minuto con preguntas probables en [`presentation/guion_presentacion.md`](presentation/guion_presentacion.md).
 
-## 9. Estado del clúster después del PITR
+## 9. Estructura del repositorio
+
+| Ruta | Contenido |
+|---|---|
+| `ejecutar_recuperacion.sh` | Orquestador de las 7 etapas (`--auto` sin pausas). |
+| `scripts/` | Etapas `02`–`08`, `simular_incidente.sql` y `monitor.sh`. |
+| `sql/` | Esquema y 100 postulaciones ficticias (se cargan al iniciar el contenedor). |
+| `config/`, `Dockerfile`, `compose.demo.yaml` | PostgreSQL 17 + pgBackRest y su configuración. |
+| `results/` | Corrida de referencia (31-oct, 11:35) y `pruebas_objetivo/` (recuperación por hora y por restore point). |
+| `presentation/` | Presentación y guion. |
+| `ai-logs/` | Registro completo de la conversación con IA y resumen de su uso. |
+| `legacy/` | No se publica (ignorado por git): versiones anteriores y corridas de ensayo, comprimidas. |
+
+## 10. Estado del clúster después del PITR
 
 ```bash
 docker exec -u postgres dba-sgd-pitr-demo-recovery-1 \
