@@ -1,0 +1,44 @@
+=== REGISTROS LEGITIMOS POSTERIORES AL INCIDENTE ===
+Sat Oct 31 11:35:46 -03 2026
+
+[1] Validando estado del incidente y registros previos
+
+[2] Insertando tres postulaciones legítimas
+INSERT 0 3
+
+[3] Exportando registros posteriores a CSV
+
+[4] Verificando registros
+ total | rechazadas | posteriores 
+-------+------------+-------------
+   103 |        100 |           3
+(1 row)
+
+
+[5] Forzando cambio de segmento WAL
+ pg_switch_wal 
+---------------
+ 0/400CED0
+(1 row)
+
+Solicitud de cambio de segmento WAL completada.
+
+[6] Verificando que el WAL archivado esté en el repositorio
+2026-10-31 14:35:47.429 P00   INFO: check command begin 2.60.0: --exec-id=280-750b0241 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --pg1-port=5432 --pg1-user=postgres --repo1-path=/var/lib/pgbackrest --stanza=main
+2026-10-31 14:35:47.432 P00   INFO: check repo1 configuration (primary)
+2026-10-31 14:35:47.443 P00   INFO: check repo1 archive for WAL (primary)
+2026-10-31 14:35:47.543 P00   INFO: WAL segment 000000010000000000000005 successfully archived to '/var/lib/pgbackrest/archive/main/17-1/0000000100000000/000000010000000000000005-f1b43068a297df60cf1331c90665362036e52939.gz' on repo1
+2026-10-31 14:35:47.544 P00   INFO: check command end: completed successfully (116ms)
+ archived_count |    last_archived_wal     |      last_archived_time       | failed_count |     last_failed_wal      
+----------------+--------------------------+-------------------------------+--------------+--------------------------
+              6 | 000000010000000000000005 | 2026-10-31 14:35:47.481683+00 |            2 | 000000010000000000000001
+(1 row)
+
+[7] Contenido del CSV
+nombre_postulante,cargo,region,estado,creado_en,observacion
+Registro Posterior 1,Administrador de Bases de Datos,Metropolitana,en_revision,2026-10-31 14:35:47.134973+00,POST_INCIDENTE_RECUPERABLE
+Registro Posterior 2,Analista de Datos,Valparaiso,preseleccionada,2026-10-31 14:35:47.135014+00,POST_INCIDENTE_RECUPERABLE
+Registro Posterior 3,Ingeniero de Infraestructura,Biobio,pendiente,2026-10-31 14:35:47.135016+00,POST_INCIDENTE_RECUPERABLE
+
+REGISTROS POSTERIORES Y EXPORTACION COMPLETADOS
+Sat Oct 31 11:35:47 -03 2026

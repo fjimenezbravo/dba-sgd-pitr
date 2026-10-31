@@ -1,0 +1,49 @@
+=== BACKUP COMPLETO PostgreSQL / pgBackRest ===
+Sat Oct 31 11:35:41 -03 2026
+
+[1] Verificando PostgreSQL
+/var/run/postgresql:5432 - accepting connections
+
+[2] Verificando registros iniciales
+ total 
+-------
+   100
+(1 row)
+
+
+[3] Verificando stanza pgBackRest
+Stanza main no encontrada. Inicializando automáticamente...
+2026-10-31 14:35:42.119 P00   INFO: stanza-create command begin 2.60.0: --exec-id=135-7e57d7fe --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --pg1-port=5432 --pg1-user=postgres --repo1-path=/var/lib/pgbackrest --stanza=main
+2026-10-31 14:35:42.124 P00   INFO: stanza-create for stanza 'main' on repo1
+2026-10-31 14:35:42.129 P00   INFO: stanza-create command end: completed successfully (11ms)
+
+[4] Creando backup FULL
+2026-10-31 14:35:42.193 P00   INFO: backup command begin 2.60.0: --exec-id=144-dfc8b8e5 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --pg1-port=5432 --pg1-user=postgres --process-max=2 --repo1-path=/var/lib/pgbackrest --repo1-retention-full=2 --stanza=main --start-fast --type=full
+2026-10-31 14:35:42.197 P00   INFO: execute backup start: backup begins after the requested immediate checkpoint completes
+2026-10-31 14:35:42.214 P00   INFO: backup start archive = 000000010000000000000003, lsn = 0/3000028
+2026-10-31 14:35:42.214 P00   INFO: check archive for prior segment 000000010000000000000002
+2026-10-31 14:35:43.885 P00   INFO: execute backup stop and wait for all WAL segments to archive
+2026-10-31 14:35:43.901 P00   INFO: backup stop archive = 000000010000000000000003, lsn = 0/3000120
+2026-10-31 14:35:43.903 P00   INFO: check archive for segment(s) 000000010000000000000003:000000010000000000000003
+2026-10-31 14:35:44.013 P00   INFO: new backup label = 20261031-143542F
+2026-10-31 14:35:44.033 P00   INFO: full backup size = 29.3MB, file total = 1270
+2026-10-31 14:35:44.033 P00   INFO: backup command end: completed successfully (1842ms)
+2026-10-31 14:35:44.033 P00   INFO: expire command begin 2.60.0: --exec-id=144-dfc8b8e5 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --repo1-path=/var/lib/pgbackrest --repo1-retention-full=2 --stanza=main
+2026-10-31 14:35:44.033 P00   INFO: expire command end: completed successfully (0ms)
+
+[5] Verificando backup
+stanza: main
+    status: ok
+    cipher: none
+
+    db (current)
+        wal archive min/max (17): 000000010000000000000001/000000010000000000000003
+
+        full backup: 20261031-143542F
+            timestamp start/stop: 2026-10-31 14:35:42+00 / 2026-10-31 14:35:43+00
+            wal start/stop: 000000010000000000000003 / 000000010000000000000003
+            database size: 29.3MB, database backup size: 29.3MB
+            repo1: backup set size: 3.8MB, backup size: 3.8MB
+
+BACKUP COMPLETADO CORRECTAMENTE
+Sat Oct 31 11:35:44 -03 2026

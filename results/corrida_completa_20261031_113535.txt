@@ -11,21 +11,21 @@
 Proyecto exclusivo: dba-sgd-pitr-demo
 Se eliminarán los contenedores y volúmenes anteriores.
 
- Container dba-sgd-pitr-demo-postgres-1 Stopping 
  Container dba-sgd-pitr-demo-recovery-1 Stopping 
+ Container dba-sgd-pitr-demo-postgres-1 Stopping 
  Container dba-sgd-pitr-demo-recovery-1 Stopped 
  Container dba-sgd-pitr-demo-recovery-1 Removing 
  Container dba-sgd-pitr-demo-recovery-1 Removed 
  Container dba-sgd-pitr-demo-postgres-1 Stopped 
  Container dba-sgd-pitr-demo-postgres-1 Removing 
  Container dba-sgd-pitr-demo-postgres-1 Removed 
- Volume dba-sgd-pitr-demo_pgdata Removing 
  Volume dba-sgd-pitr-demo_pitrdata Removing 
- Network dba-sgd-pitr-demo_default Removing 
  Volume dba-sgd-pitr-demo_pgbackrest_repo Removing 
+ Volume dba-sgd-pitr-demo_pgdata Removing 
  Volume dba-sgd-pitr-demo_pgbackrest_log Removing 
- Volume dba-sgd-pitr-demo_pgdata Removed 
+ Network dba-sgd-pitr-demo_default Removing 
  Volume dba-sgd-pitr-demo_pitrdata Removed 
+ Volume dba-sgd-pitr-demo_pgdata Removed 
  Volume dba-sgd-pitr-demo_pgbackrest_repo Removed 
  Volume dba-sgd-pitr-demo_pgbackrest_log Removed 
  Network dba-sgd-pitr-demo_default Removed 
@@ -43,46 +43,52 @@ Se eliminarán los contenedores y volúmenes anteriores.
 #2 DONE 0.0s
 
 #3 [internal] load metadata for docker.io/library/postgres:17-bookworm
-#3 DONE 0.6s
+#3 ...
 
-#4 [internal] load .dockerignore
-#4 transferring context: 2B done
+#4 [auth] library/postgres:pull token for registry-1.docker.io
 #4 DONE 0.0s
 
-#5 [1/2] FROM docker.io/library/postgres:17-bookworm@sha256:839fbb5a4942a7758dd93e18b42ea5649807491a0545b5eeeb8f0b8bb11857a5
-#5 resolve docker.io/library/postgres:17-bookworm@sha256:839fbb5a4942a7758dd93e18b42ea5649807491a0545b5eeeb8f0b8bb11857a5 done
+#3 [internal] load metadata for docker.io/library/postgres:17-bookworm
+#3 DONE 1.0s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 2B done
 #5 DONE 0.0s
 
-#6 [2/2] RUN apt-get update     && apt-get install -y --no-install-recommends pgbackrest     && rm -rf /var/lib/apt/lists/*     && mkdir -p /var/lib/pgbackrest /var/log/pgbackrest     && chown -R postgres:postgres        /var/lib/pgbackrest /var/log/pgbackrest
-#6 CACHED
+#6 [1/2] FROM docker.io/library/postgres:17-bookworm@sha256:839fbb5a4942a7758dd93e18b42ea5649807491a0545b5eeeb8f0b8bb11857a5
+#6 resolve docker.io/library/postgres:17-bookworm@sha256:839fbb5a4942a7758dd93e18b42ea5649807491a0545b5eeeb8f0b8bb11857a5 done
+#6 DONE 0.0s
 
-#7 exporting to image
-#7 exporting layers done
-#7 exporting manifest sha256:55bae19447390471c534401c86d0fe9d7b00b1cae3b70adf4c85a33e8c615aa0 done
-#7 exporting config sha256:4ec2f62a4eda3f68a31ae3a6d2747dbd35c33ee32db61bb53d48794da933d9cd done
-#7 exporting attestation manifest sha256:015a41bb76251575eb0719d45ca4e7ae820c7f82bc9c478667d3086d85dba5f1 0.0s done
-#7 exporting manifest list sha256:2a796292c2884ddd7be9662d8f62f411827444637a9a0af5db60138cd6b99388 done
-#7 naming to docker.io/library/dba-sgd-postgres:17-pgbackrest done
-#7 unpacking to docker.io/library/dba-sgd-postgres:17-pgbackrest done
-#7 DONE 0.1s
+#7 [2/2] RUN apt-get update     && apt-get install -y --no-install-recommends pgbackrest     && rm -rf /var/lib/apt/lists/*     && mkdir -p /var/lib/pgbackrest /var/log/pgbackrest     && chown -R postgres:postgres        /var/lib/pgbackrest /var/log/pgbackrest
+#7 CACHED
 
-#8 resolving provenance for metadata file
+#8 exporting to image
+#8 exporting layers done
+#8 exporting manifest sha256:55bae19447390471c534401c86d0fe9d7b00b1cae3b70adf4c85a33e8c615aa0 done
+#8 exporting config sha256:4ec2f62a4eda3f68a31ae3a6d2747dbd35c33ee32db61bb53d48794da933d9cd done
+#8 exporting attestation manifest sha256:7f4f76c113184d20bf9b9b57c807e6907c161356db7d2fe0b21fb82a88bcbe6c 0.0s done
+#8 exporting manifest list sha256:97d316adfb3c839acba77349317a035083d2d24b5060306b2744bd9b212da5ae done
+#8 naming to docker.io/library/dba-sgd-postgres:17-pgbackrest done
+#8 unpacking to docker.io/library/dba-sgd-postgres:17-pgbackrest done
 #8 DONE 0.0s
+
+#9 resolving provenance for metadata file
+#9 DONE 0.0s
  Image dba-sgd-postgres:17-pgbackrest Built 
+ Volume dba-sgd-pitr-demo_pgbackrest_repo Creating 
+ Volume dba-sgd-pitr-demo_pgbackrest_repo Creating 
+ Volume dba-sgd-pitr-demo_pgdata Creating 
+ Volume dba-sgd-pitr-demo_pgdata Creating 
+ Network dba-sgd-pitr-demo_default Creating 
  Network dba-sgd-pitr-demo_default Creating 
  Volume dba-sgd-pitr-demo_pgbackrest_log Creating 
  Volume dba-sgd-pitr-demo_pgbackrest_log Creating 
- Network dba-sgd-pitr-demo_default Creating 
- Volume dba-sgd-pitr-demo_pgdata Creating 
- Volume dba-sgd-pitr-demo_pgdata Creating 
- Volume dba-sgd-pitr-demo_pgbackrest_repo Creating 
- Volume dba-sgd-pitr-demo_pgbackrest_repo Creating 
+ Volume dba-sgd-pitr-demo_pgbackrest_repo Created 
+ Volume dba-sgd-pitr-demo_pgbackrest_repo Created 
  Volume dba-sgd-pitr-demo_pgbackrest_log Created 
  Volume dba-sgd-pitr-demo_pgbackrest_log Created 
  Volume dba-sgd-pitr-demo_pgdata Created 
  Volume dba-sgd-pitr-demo_pgdata Created 
- Volume dba-sgd-pitr-demo_pgbackrest_repo Created 
- Volume dba-sgd-pitr-demo_pgbackrest_repo Created 
  Network dba-sgd-pitr-demo_default Created 
  Network dba-sgd-pitr-demo_default Created 
  Container dba-sgd-pitr-demo-postgres-1 Creating 
@@ -111,7 +117,7 @@ Script: 02_backup.sh
 ==================================================
 
 === BACKUP COMPLETO PostgreSQL / pgBackRest ===
-Sat Oct 31 11:11:25 -03 2026
+Sat Oct 31 11:35:41 -03 2026
 
 [1] Verificando PostgreSQL
 /var/run/postgresql:5432 - accepting connections
@@ -125,23 +131,23 @@ Sat Oct 31 11:11:25 -03 2026
 
 [3] Verificando stanza pgBackRest
 Stanza main no encontrada. Inicializando automáticamente...
-2026-10-31 14:11:26.175 P00   INFO: stanza-create command begin 2.60.0: --exec-id=135-ed80a923 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --pg1-port=5432 --pg1-user=postgres --repo1-path=/var/lib/pgbackrest --stanza=main
-2026-10-31 14:11:26.180 P00   INFO: stanza-create for stanza 'main' on repo1
-2026-10-31 14:11:26.185 P00   INFO: stanza-create command end: completed successfully (12ms)
+2026-10-31 14:35:42.119 P00   INFO: stanza-create command begin 2.60.0: --exec-id=135-7e57d7fe --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --pg1-port=5432 --pg1-user=postgres --repo1-path=/var/lib/pgbackrest --stanza=main
+2026-10-31 14:35:42.124 P00   INFO: stanza-create for stanza 'main' on repo1
+2026-10-31 14:35:42.129 P00   INFO: stanza-create command end: completed successfully (11ms)
 
 [4] Creando backup FULL
-2026-10-31 14:11:26.249 P00   INFO: backup command begin 2.60.0: --exec-id=144-50f93379 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --pg1-port=5432 --pg1-user=postgres --process-max=2 --repo1-path=/var/lib/pgbackrest --repo1-retention-full=2 --stanza=main --start-fast --type=full
-2026-10-31 14:11:26.259 P00   INFO: execute backup start: backup begins after the requested immediate checkpoint completes
-2026-10-31 14:11:26.279 P00   INFO: backup start archive = 000000010000000000000003, lsn = 0/3000028
-2026-10-31 14:11:26.279 P00   INFO: check archive for prior segment 000000010000000000000002
-2026-10-31 14:11:27.880 P00   INFO: execute backup stop and wait for all WAL segments to archive
-2026-10-31 14:11:27.896 P00   INFO: backup stop archive = 000000010000000000000003, lsn = 0/3000120
-2026-10-31 14:11:27.898 P00   INFO: check archive for segment(s) 000000010000000000000003:000000010000000000000003
-2026-10-31 14:11:28.007 P00   INFO: new backup label = 20261031-141126F
-2026-10-31 14:11:28.022 P00   INFO: full backup size = 29.3MB, file total = 1270
-2026-10-31 14:11:28.022 P00   INFO: backup command end: completed successfully (1776ms)
-2026-10-31 14:11:28.022 P00   INFO: expire command begin 2.60.0: --exec-id=144-50f93379 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --repo1-path=/var/lib/pgbackrest --repo1-retention-full=2 --stanza=main
-2026-10-31 14:11:28.023 P00   INFO: expire command end: completed successfully (1ms)
+2026-10-31 14:35:42.193 P00   INFO: backup command begin 2.60.0: --exec-id=144-dfc8b8e5 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --pg1-port=5432 --pg1-user=postgres --process-max=2 --repo1-path=/var/lib/pgbackrest --repo1-retention-full=2 --stanza=main --start-fast --type=full
+2026-10-31 14:35:42.197 P00   INFO: execute backup start: backup begins after the requested immediate checkpoint completes
+2026-10-31 14:35:42.214 P00   INFO: backup start archive = 000000010000000000000003, lsn = 0/3000028
+2026-10-31 14:35:42.214 P00   INFO: check archive for prior segment 000000010000000000000002
+2026-10-31 14:35:43.885 P00   INFO: execute backup stop and wait for all WAL segments to archive
+2026-10-31 14:35:43.901 P00   INFO: backup stop archive = 000000010000000000000003, lsn = 0/3000120
+2026-10-31 14:35:43.903 P00   INFO: check archive for segment(s) 000000010000000000000003:000000010000000000000003
+2026-10-31 14:35:44.013 P00   INFO: new backup label = 20261031-143542F
+2026-10-31 14:35:44.033 P00   INFO: full backup size = 29.3MB, file total = 1270
+2026-10-31 14:35:44.033 P00   INFO: backup command end: completed successfully (1842ms)
+2026-10-31 14:35:44.033 P00   INFO: expire command begin 2.60.0: --exec-id=144-dfc8b8e5 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --repo1-path=/var/lib/pgbackrest --repo1-retention-full=2 --stanza=main
+2026-10-31 14:35:44.033 P00   INFO: expire command end: completed successfully (0ms)
 
 [5] Verificando backup
 stanza: main
@@ -151,15 +157,15 @@ stanza: main
     db (current)
         wal archive min/max (17): 000000010000000000000001/000000010000000000000003
 
-        full backup: 20261031-141126F
-            timestamp start/stop: 2026-10-31 14:11:26+00 / 2026-10-31 14:11:27+00
+        full backup: 20261031-143542F
+            timestamp start/stop: 2026-10-31 14:35:42+00 / 2026-10-31 14:35:43+00
             wal start/stop: 000000010000000000000003 / 000000010000000000000003
             database size: 29.3MB, database backup size: 29.3MB
             repo1: backup set size: 3.8MB, backup size: 3.8MB
 
 BACKUP COMPLETADO CORRECTAMENTE
-Sat Oct 31 11:11:28 -03 2026
-Evidencia guardada en: results/backup_20261031_111125.txt
+Sat Oct 31 11:35:44 -03 2026
+Evidencia guardada en: results/backup_20261031_113541.txt
 
 [OK] Etapa 1 completada.
 RESUMEN: Respaldo FULL ejecutado y verificado.
@@ -194,7 +200,7 @@ Script: 03_cambios_legitimos.sh
 ==================================================
 
 === CAMBIOS LEGITIMOS POSTERIORES AL RESPALDO ===
-Sat Oct 31 11:11:28 -03 2026
+Sat Oct 31 11:35:44 -03 2026
 
 Estos cambios ocurren despues del respaldo FULL: solo pueden volver
 si la recuperacion reproduce el WAL archivado, no basta el respaldo base.
@@ -220,13 +226,13 @@ UPDATE 5
  preseleccionada |    33
 (4 rows)
 
-[4] Creando restore point preventivo (plan B): pitr_objetivo_20261031_111128
+[4] Creando restore point preventivo (plan B): pitr_objetivo_20261031_113544
 LSN: 0/40050A8
 
 CAMBIOS LEGITIMOS REGISTRADOS
-Sat Oct 31 11:11:28 -03 2026
+Sat Oct 31 11:35:44 -03 2026
 Datos guardados en results/restore_point.env
-Evidencia guardada en: results/cambios_legitimos_20261031_111128.txt
+Evidencia guardada en: results/cambios_legitimos_20261031_113544.txt
 
 [OK] Etapa 2 completada.
 RESUMEN: Revisiones legítimas aplicadas después del respaldo FULL (solo vuelven vía WAL).
@@ -262,12 +268,12 @@ Script: 04_incidente.sh
 
 [1] Validando estado previo del laboratorio
 === SIMULACION DEL INCIDENTE ===
-Sat Oct 31 11:11:28 -03 2026
+Sat Oct 31 11:35:44 -03 2026
 
 [2] Ultimo cambio legitimo antes del incidente (id 50)
 UPDATE 1
 
-[3] Foto del estado previo (todas las columnas): results/antes_incidente_20261031_111128.csv
+[3] Foto del estado previo (todas las columnas): results/antes_incidente_20261031_113544.csv
      estado      | count 
 -----------------+-------
  aprobada        |    11
@@ -279,7 +285,7 @@ UPDATE 1
 [4] Ejecutando UPDATE accidental (hora del servidor y XID registrados)
 BEGIN
 XID_INCIDENTE=746
-HORA_INCIDENTE=2026-10-31 14:11:30.871975+00
+HORA_INCIDENTE=2026-10-31 14:35:46.880949+00
 UPDATE 100
 AFECTADOS=100
 COMMIT
@@ -293,9 +299,9 @@ COMMIT
 
 INCIDENTE SIMULADO
 XID del incidente : 746
-Hora del incidente: 2026-10-31 14:11:30.871975+00
-Sat Oct 31 11:11:30 -03 2026
-Evidencia guardada en: results/incidente_20261031_111128.txt
+Hora del incidente: 2026-10-31 14:35:46.880949+00
+Sat Oct 31 11:35:46 -03 2026
+Evidencia guardada en: results/incidente_20261031_113544.txt
 
 [OK] Etapa 3 completada.
 RESUMEN: Foto previa tomada; UPDATE accidental sobre los 100 registros con XID y hora registrados.
@@ -330,7 +336,7 @@ Script: 05_registros_posteriores.sh
 ==================================================
 
 === REGISTROS LEGITIMOS POSTERIORES AL INCIDENTE ===
-Sat Oct 31 11:11:30 -03 2026
+Sat Oct 31 11:35:46 -03 2026
 
 [1] Validando estado del incidente y registros previos
 
@@ -354,17 +360,28 @@ INSERT 0 3
 
 Solicitud de cambio de segmento WAL completada.
 
-[6] Contenido del CSV
+[6] Verificando que el WAL archivado esté en el repositorio
+2026-10-31 14:35:47.429 P00   INFO: check command begin 2.60.0: --exec-id=280-750b0241 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --pg1-port=5432 --pg1-user=postgres --repo1-path=/var/lib/pgbackrest --stanza=main
+2026-10-31 14:35:47.432 P00   INFO: check repo1 configuration (primary)
+2026-10-31 14:35:47.443 P00   INFO: check repo1 archive for WAL (primary)
+2026-10-31 14:35:47.543 P00   INFO: WAL segment 000000010000000000000005 successfully archived to '/var/lib/pgbackrest/archive/main/17-1/0000000100000000/000000010000000000000005-f1b43068a297df60cf1331c90665362036e52939.gz' on repo1
+2026-10-31 14:35:47.544 P00   INFO: check command end: completed successfully (116ms)
+ archived_count |    last_archived_wal     |      last_archived_time       | failed_count |     last_failed_wal      
+----------------+--------------------------+-------------------------------+--------------+--------------------------
+              6 | 000000010000000000000005 | 2026-10-31 14:35:47.481683+00 |            2 | 000000010000000000000001
+(1 row)
+
+[7] Contenido del CSV
 nombre_postulante,cargo,region,estado,creado_en,observacion
-Registro Posterior 1,Administrador de Bases de Datos,Metropolitana,en_revision,2026-10-31 14:11:31.130655+00,POST_INCIDENTE_RECUPERABLE
-Registro Posterior 2,Analista de Datos,Valparaiso,preseleccionada,2026-10-31 14:11:31.130704+00,POST_INCIDENTE_RECUPERABLE
-Registro Posterior 3,Ingeniero de Infraestructura,Biobio,pendiente,2026-10-31 14:11:31.130706+00,POST_INCIDENTE_RECUPERABLE
+Registro Posterior 1,Administrador de Bases de Datos,Metropolitana,en_revision,2026-10-31 14:35:47.134973+00,POST_INCIDENTE_RECUPERABLE
+Registro Posterior 2,Analista de Datos,Valparaiso,preseleccionada,2026-10-31 14:35:47.135014+00,POST_INCIDENTE_RECUPERABLE
+Registro Posterior 3,Ingeniero de Infraestructura,Biobio,pendiente,2026-10-31 14:35:47.135016+00,POST_INCIDENTE_RECUPERABLE
 
 REGISTROS POSTERIORES Y EXPORTACION COMPLETADOS
-Sat Oct 31 11:11:31 -03 2026
-CSV generado: results/post_incidente_20261031_111130.csv
+Sat Oct 31 11:35:47 -03 2026
+CSV generado: results/post_incidente_20261031_113546.csv
 Referencia guardada en: results/post_incidente_csv.path
-Evidencia guardada en: results/post_incidente_20261031_111130.txt
+Evidencia guardada en: results/post_incidente_20261031_113546.txt
 
 [OK] Etapa 4 completada.
 RESUMEN: Tres registros posteriores preservados mediante CSV.
@@ -399,7 +416,7 @@ Script: 06_restaurar_pitr.sh
 ==================================================
 
 === RESTAURACION PITR POSTGRESQL 17 ===
-Sat Oct 31 11:11:31 -03 2026
+Sat Oct 31 11:35:47 -03 2026
 Tipo de objetivo: xid
 Objetivo: 746
 
@@ -415,19 +432,19 @@ Recovery detenido.
  Volume dba-sgd-pitr-demo_pitrdata Creating 
  Volume dba-sgd-pitr-demo_pitrdata Created 
  Volume dba-sgd-pitr-demo_pitrdata Created 
- Container dba-sgd-pitr-demo-recovery-run-67f4c3903afd Creating 
- Container dba-sgd-pitr-demo-recovery-run-67f4c3903afd Created 
+ Container dba-sgd-pitr-demo-recovery-run-7d47cdd0d6c1 Creating 
+ Container dba-sgd-pitr-demo-recovery-run-7d47cdd0d6c1 Created 
 Destino vacio y permisos preparados.
 
 [4] Ejecutando restauracion PITR
- Container dba-sgd-pitr-demo-recovery-run-de0fa3223192 Creating 
- Container dba-sgd-pitr-demo-recovery-run-de0fa3223192 Created 
-2026-10-31 14:11:31.887 P00   INFO: restore command begin 2.60.0: --exec-id=1-3031f55f --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=main --target=746 --target-action=promote --target-exclusive --type=xid
-2026-10-31 14:11:31.891 P00   INFO: repo1: restore backup set 20261031-141126F, recovery will start at 2026-10-31 14:11:26
-2026-10-31 14:11:32.642 P00   INFO: write updated /var/lib/postgresql/data/postgresql.auto.conf
-2026-10-31 14:11:32.646 P00   INFO: restore global/pg_control (performed last to ensure aborted restores cannot be started)
-2026-10-31 14:11:32.646 P00   INFO: restore size = 29.3MB, file total = 1270
-2026-10-31 14:11:32.647 P00   INFO: restore command end: completed successfully (762ms)
+ Container dba-sgd-pitr-demo-recovery-run-c2aebeb7792a Creating 
+ Container dba-sgd-pitr-demo-recovery-run-c2aebeb7792a Created 
+2026-10-31 14:35:48.146 P00   INFO: restore command begin 2.60.0: --exec-id=1-01d2505e --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=main --target=746 --target-action=promote --target-exclusive --type=xid
+2026-10-31 14:35:48.151 P00   INFO: repo1: restore backup set 20261031-143542F, recovery will start at 2026-10-31 14:35:42
+2026-10-31 14:35:48.862 P00   INFO: write updated /var/lib/postgresql/data/postgresql.auto.conf
+2026-10-31 14:35:48.869 P00   INFO: restore global/pg_control (performed last to ensure aborted restores cannot be started)
+2026-10-31 14:35:48.870 P00   INFO: restore size = 29.3MB, file total = 1270
+2026-10-31 14:35:48.871 P00   INFO: restore command end: completed successfully (727ms)
 
 [5] Iniciando PostgreSQL restaurado en puerto 5433
  Container dba-sgd-pitr-demo-recovery-1 Creating 
@@ -453,11 +470,11 @@ Recuperacion terminada y base promovida.
 
 
 RESTAURACION PITR COMPLETADA
-Inicio epoch: 1793455891
-Fin epoch: 1793455894
+Inicio epoch: 1793457347
+Fin epoch: 1793457350
 RTO desde inicio de restauracion hasta base promovida: 3 segundos
-Sat Oct 31 11:11:34 -03 2026
-Evidencia guardada en: results/restauracion_pitr_20261031_111131.txt
+Sat Oct 31 11:35:50 -03 2026
+Evidencia guardada en: results/restauracion_pitr_20261031_113547.txt
 
 [OK] Etapa 5 completada.
 RESUMEN: PITR hasta justo antes del COMMIT del incidente. Base recuperada en puerto 5433.
@@ -492,9 +509,9 @@ Script: 07_reconciliar_post_incidente.sh
 ==================================================
 
 === RECONCILIACION DE REGISTROS POSTERIORES ===
-Sat Oct 31 11:11:34 -03 2026
+Sat Oct 31 11:35:50 -03 2026
 
-CSV utilizado: results/post_incidente_20261031_111130.csv
+CSV utilizado: results/post_incidente_20261031_113546.csv
 Recovery validado: 100 registros originales.
 
 [1] Importando CSV en recovery (puerto 5433)
@@ -510,15 +527,15 @@ COPY 3
 [3] Verificando los tres registros reincorporados
   nombre_postulante   |              cargo              |    region     |     estado      |           creado_en           
 ----------------------+---------------------------------+---------------+-----------------+-------------------------------
- Registro Posterior 1 | Administrador de Bases de Datos | Metropolitana | en_revision     | 2026-10-31 14:11:31.130655+00
- Registro Posterior 2 | Analista de Datos               | Valparaiso    | preseleccionada | 2026-10-31 14:11:31.130704+00
- Registro Posterior 3 | Ingeniero de Infraestructura    | Biobio        | pendiente       | 2026-10-31 14:11:31.130706+00
+ Registro Posterior 1 | Administrador de Bases de Datos | Metropolitana | en_revision     | 2026-10-31 14:35:47.134973+00
+ Registro Posterior 2 | Analista de Datos               | Valparaiso    | preseleccionada | 2026-10-31 14:35:47.135014+00
+ Registro Posterior 3 | Ingeniero de Infraestructura    | Biobio        | pendiente       | 2026-10-31 14:35:47.135016+00
 (3 rows)
 
 
 RECONCILIACION COMPLETADA: 103 registros, 3 posteriores y 0 rechazados.
-Sat Oct 31 11:11:34 -03 2026
-Evidencia guardada en: results/reconciliacion_20261031_111134.txt
+Sat Oct 31 11:35:50 -03 2026
+Evidencia guardada en: results/reconciliacion_20261031_113550.txt
 
 [OK] Etapa 6 completada.
 RESUMEN: Tres registros posteriores reincorporados.
@@ -553,8 +570,8 @@ Script: 08_validar_integridad.sh
 ==================================================
 
 === VALIDACION DE INTEGRIDAD DE LOS 100 REGISTROS ORIGINALES ===
-Sat Oct 31 11:11:34 -03 2026
-Referencia: results/antes_incidente_20261031_111128.csv (foto tomada justo antes del UPDATE)
+Sat Oct 31 11:35:51 -03 2026
+Referencia: results/antes_incidente_20261031_113544.csv (foto tomada justo antes del UPDATE)
 Columnas comparadas: id, nombre_postulante, cargo, region, estado, creado_en, observacion
 
 [1] Exportando registros originales de la base recuperada (5433)
@@ -578,8 +595,8 @@ Recovery:    968e72f6daf90fba0028f8c3009ac2c8  -
 
 
 VALIDACION DE INTEGRIDAD COMPLETADA
-Sat Oct 31 11:11:34 -03 2026
-Evidencia guardada en: results/integridad_20261031_111134.txt
+Sat Oct 31 11:35:51 -03 2026
+Evidencia guardada en: results/integridad_20261031_113551.txt
 
 [OK] Etapa 7 completada.
 RESUMEN: Los 100 registros recuperados son idénticos a la foto previa al UPDATE.

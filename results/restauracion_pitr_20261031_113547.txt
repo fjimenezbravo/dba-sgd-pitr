@@ -1,5 +1,5 @@
 === RESTAURACION PITR POSTGRESQL 17 ===
-Sat Oct 31 11:11:31 -03 2026
+Sat Oct 31 11:35:47 -03 2026
 Tipo de objetivo: xid
 Objetivo: 746
 
@@ -15,19 +15,19 @@ Recovery detenido.
  Volume dba-sgd-pitr-demo_pitrdata Creating 
  Volume dba-sgd-pitr-demo_pitrdata Created 
  Volume dba-sgd-pitr-demo_pitrdata Created 
- Container dba-sgd-pitr-demo-recovery-run-67f4c3903afd Creating 
- Container dba-sgd-pitr-demo-recovery-run-67f4c3903afd Created 
+ Container dba-sgd-pitr-demo-recovery-run-7d47cdd0d6c1 Creating 
+ Container dba-sgd-pitr-demo-recovery-run-7d47cdd0d6c1 Created 
 Destino vacio y permisos preparados.
 
 [4] Ejecutando restauracion PITR
- Container dba-sgd-pitr-demo-recovery-run-de0fa3223192 Creating 
- Container dba-sgd-pitr-demo-recovery-run-de0fa3223192 Created 
-2026-10-31 14:11:31.887 P00   INFO: restore command begin 2.60.0: --exec-id=1-3031f55f --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=main --target=746 --target-action=promote --target-exclusive --type=xid
-2026-10-31 14:11:31.891 P00   INFO: repo1: restore backup set 20261031-141126F, recovery will start at 2026-10-31 14:11:26
-2026-10-31 14:11:32.642 P00   INFO: write updated /var/lib/postgresql/data/postgresql.auto.conf
-2026-10-31 14:11:32.646 P00   INFO: restore global/pg_control (performed last to ensure aborted restores cannot be started)
-2026-10-31 14:11:32.646 P00   INFO: restore size = 29.3MB, file total = 1270
-2026-10-31 14:11:32.647 P00   INFO: restore command end: completed successfully (762ms)
+ Container dba-sgd-pitr-demo-recovery-run-c2aebeb7792a Creating 
+ Container dba-sgd-pitr-demo-recovery-run-c2aebeb7792a Created 
+2026-10-31 14:35:48.146 P00   INFO: restore command begin 2.60.0: --exec-id=1-01d2505e --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=main --target=746 --target-action=promote --target-exclusive --type=xid
+2026-10-31 14:35:48.151 P00   INFO: repo1: restore backup set 20261031-143542F, recovery will start at 2026-10-31 14:35:42
+2026-10-31 14:35:48.862 P00   INFO: write updated /var/lib/postgresql/data/postgresql.auto.conf
+2026-10-31 14:35:48.869 P00   INFO: restore global/pg_control (performed last to ensure aborted restores cannot be started)
+2026-10-31 14:35:48.870 P00   INFO: restore size = 29.3MB, file total = 1270
+2026-10-31 14:35:48.871 P00   INFO: restore command end: completed successfully (727ms)
 
 [5] Iniciando PostgreSQL restaurado en puerto 5433
  Container dba-sgd-pitr-demo-recovery-1 Creating 
@@ -53,7 +53,7 @@ Recuperacion terminada y base promovida.
 
 
 RESTAURACION PITR COMPLETADA
-Inicio epoch: 1793455891
-Fin epoch: 1793455894
+Inicio epoch: 1793457347
+Fin epoch: 1793457350
 RTO desde inicio de restauracion hasta base promovida: 3 segundos
-Sat Oct 31 11:11:34 -03 2026
+Sat Oct 31 11:35:50 -03 2026

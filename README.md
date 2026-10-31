@@ -48,7 +48,7 @@ La recuperación se hace **en paralelo, sin tocar la base dañada**. Así se con
 | 1 | `02_backup.sh` | Crea la stanza y un respaldo FULL; muestra `pgbackrest info`. |
 | 2 | `03_cambios_legitimos.sh` | Revisores aprueban o preseleccionan 15 postulaciones **después del respaldo**: estos cambios solo vuelven si se reproduce el WAL. También crea un restore point preventivo (plan B). |
 | 3 | `04_incidente.sh` | Último cambio legítimo (id 50), **foto previa** de todas las columnas, y 2 s después el `UPDATE` sin `WHERE`. Registra el **XID** y la **hora del servidor** de la transacción. |
-| 4 | `05_registros_posteriores.sh` | Llegan 3 postulaciones nuevas; se exportan a CSV y se fuerza `pg_switch_wal()` para que el WAL del incidente quede archivado. |
+| 4 | `05_registros_posteriores.sh` | Llegan 3 postulaciones nuevas y se exportan a CSV. `pg_switch_wal()` cierra el segmento del incidente y `pgbackrest check` **espera** a que esté en el repositorio (o falla), para que la recuperación no empiece antes de que llegue el WAL. |
 | 5 | `06_restaurar_pitr.sh` | `pgbackrest restore --type=xid --target=<XID> --target-exclusive`: recupera hasta justo antes del `COMMIT` del incidente. Mide el RTO hasta que la base está promovida (`pg_is_in_recovery() = f`). |
 | 6 | `07_reconciliar_post_incidente.sh` | Reincorpora las 3 postulaciones posteriores en la base recuperada. |
 | 7 | `08_validar_integridad.sh` | Compara **todas las columnas** de los 100 registros recuperados contra la foto previa al `UPDATE` (diff + MD5). |
@@ -61,7 +61,9 @@ Prueba en negativo: recuperar con el restore point (`TARGET_TYPE=name`) pierde e
 
 ## 4. Resultados medidos
 
-Corrida de referencia: `results/corrida_completa_20261031_111119.txt`.
+Corrida de referencia: `results/corrida_completa_20261031_113535.txt`.
+
+En esa corrida, `pg_stat_archiver` muestra `failed_count = 2` sobre el primer segmento: PostgreSQL intentó archivar antes de que la etapa 1 creara la stanza. pgBackRest reintentó y el archivado se completó (`pgbackrest check` correcto). En producción la stanza se crea antes de activar `archive_mode`.
 
 | Medida | Valor |
 |---|---|

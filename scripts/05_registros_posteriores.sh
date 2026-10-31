@@ -99,7 +99,17 @@ SQL
 
   echo "Solicitud de cambio de segmento WAL completada."
   echo
-  echo "[6] Contenido del CSV"
+
+  # pg_switch_wal() no espera al archivador. pgbackrest check fuerza otro
+  # cambio de segmento y espera a que llegue al repositorio (o falla); como
+  # el archivado es en orden, garantiza que el WAL del incidente ya esta ahi.
+  echo "[6] Verificando que el WAL archivado esté en el repositorio"
+  "${COMPOSE[@]}" exec -T -u postgres postgres \
+    pgbackrest --stanza=main check
+  "${COMPOSE[@]}" exec -T postgres psql -U postgres -d postulaciones_db \
+    -c "SELECT archived_count, last_archived_wal, last_archived_time, failed_count, last_failed_wal FROM pg_stat_archiver;"
+
+  echo "[7] Contenido del CSV"
   cat "$CSV"
 
   echo
