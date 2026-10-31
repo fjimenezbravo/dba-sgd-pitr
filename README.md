@@ -151,7 +151,7 @@ Un respaldo que no se ha restaurado no está probado. Propongo:
 
 ## 8. Uso de IA y material de presentación
 
-- **IA:** cómo la usé, qué verifiqué y qué no delegué, en [`ai-logs/uso_de_ia.md`](ai-logs/uso_de_ia.md). Los registros completos están en `ai-logs/`.
+- **IA:** desarrollé la versión inicial del laboratorio; el 31 de octubre incorporé Claude Code, que por instrucción mía modificó y amplió el código, la documentación y la presentación. El detalle de qué hizo cada uno, mis decisiones y mis verificaciones está en [`ai-logs/uso_de_ia.md`](ai-logs/uso_de_ia.md), y el registro de la sesión en `ai-logs/`.
 - **Presentación:** [`presentation/Volver_al_minuto_anterior_v5.pptx`](presentation/Volver_al_minuto_anterior_v5.pptx) (18 láminas, con notas del orador).
 
 ## 9. Estructura del repositorio

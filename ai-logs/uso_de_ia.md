@@ -4,14 +4,39 @@ El enunciado pide usar IA y mostrar *"registros reales donde se ve a la persona 
 
 ## Herramienta y rol
 
-- **Herramienta:** Claude Code (modelo Claude Opus), sobre el repositorio local.
-- **Rol de la IA:** revisar, proponer, escribir código a pedido y ejecutar pruebas.
-- **Mi rol:** decidir el alcance, aceptar o rechazar propuestas, verificar resultados y presentar. Las decisiones de diseño y de qué entregar son mías.
-- **Antes de esta sesión (29 al 31 de octubre):** la primera versión del laboratorio (entorno, scripts iniciales y la presentación v3) la construí sin IA, con la documentación oficial de PostgreSQL. La IA se usó solo en la sesión del 31-oct registrada en esta carpeta.
+**Herramienta:** Claude Code (modelo Claude Opus), sobre el repositorio local, en una sola sesión el 31 de octubre.
+
+### 1. Desarrollo inicial (29 al 31 de octubre, antes de la sesión)
+
+Desarrollé la versión inicial del laboratorio de recuperación PITR con PostgreSQL 17, Docker Compose y pgBackRest, incluyendo su configuración, scripts y estructura de ejecución, y la presentación v3, con apoyo de la documentación oficial de PostgreSQL.
+
+Según mi declaración, este trabajo lo hice **sin usar IA**. Git respalda la autoría y las fechas (commits `3c6ecf6` del 29-oct y `0c502ea` del 31-oct a las 10:37, anterior a cualquier cambio de Claude Code), pero no registra qué herramientas se usaron: que fue sin IA es mi declaración, no algo que Git demuestre.
+
+Archivos que siguen exactamente como los dejé: `Dockerfile`, `compose.demo.yaml`, `config/pgbackrest.conf`, `sql/`, `.env.example` y `entorno-inicial.txt`.
+
+### 2. Modificaciones de Claude Code (31 de octubre)
+
+Incorporé Claude Code para revisar la implementación contra el enunciado. A partir de esa revisión, y por instrucción mía, Claude Code escribió y modificó código y documentación:
+- **Recuperación por XID** y foto previa al incidente: reescribió en gran parte `04_incidente.sh`, `06_restaurar_pitr.sh` y `simular_incidente.sql`, y reemplazó mi `03` por `03_cambios_legitimos.sh` (que conserva mi restore point como plan B).
+- **Validaciones:** reescribió `08_validar_integridad.sh` para comparar contra la foto previa y agregó `pgbackrest check` a mi `05_registros_posteriores.sh`.
+- **Ajustes menores** en mis scripts `02` y `07` (una línea cada uno) y en el orquestador `ejecutar_recuperacion.sh` (modo `--auto`, nombre del proyecto desde `.env`, colores); la estructura de etapas y el checklist son míos.
+- **Monitor de la demostración:** creó `scripts/monitor.sh`.
+- **Documentación y presentación:** reescribió el README, escribió los documentos de esta carpeta y actualizó mi presentación v3 hasta la v5.
+- **Ejecución:** corrió las demostraciones de prueba y los commits.
+
+Sobre la atribución que muestra GitHub: los commits de la sesión los ejecutó Claude Code en mi equipo, por eso el autor aparece con mi identidad de Git, y Claude Code agrega automáticamente la línea `Co-Authored-By: Claude`. Algunos de esos commits y sus publicaciones los hizo sin que yo pidiera publicar en ese mensaje, aunque el contenido de cada cambio respondía a mis instrucciones.
+
+### 3. Mis decisiones, pruebas y verificaciones
+
+- **Decidí** qué cambios aplicar y cuáles descartar (los ejemplos están más abajo). Algunas propuestas técnicas, como recuperar por XID, vinieron de Claude Code y las aprobé.
+- **Cuestioné y revisé** los resultados: por qué la postulación 50, si la lámina 11 era correcta, si el guion debía publicarse, qué archivos sobraban.
+- **Ejecuté por mi cuenta** al menos cuatro ensayos completos de la demostración y las verificaciones previas a la presentación.
+
+El registro completo de la sesión está en esta carpeta. Los ensayos que ejecuté en mi propia terminal no aparecen en el registro; su evidencia quedó en los resultados archivados.
 
 ## Mis reglas de uso
 
-1. **La IA propone, yo decido.** Las decisiones de alcance fueron mías. Dentro de las tareas que pedí, la IA aplicó algunos ajustes menores que no solicité de forma explícita (por ejemplo, corregir el shebang del orquestador y agregar el modo `--auto`); los revisé y quedaron registrados.
+1. **La IA propone, yo decido.** Las decisiones de alcance fueron mías. Dentro de las tareas que pedí, Claude Code aplicó algunos ajustes menores que no solicité de forma explícita (por ejemplo, corregir el shebang del orquestador y agregar el modo `--auto`); los revisé y quedaron registrados.
 2. **Nada se da por bueno sin una corrida real.** Cada cambio de código se probó con la demo completa y se revisó la evidencia en `results/`. Los cambios de documentación y de la presentación se revisaron visualmente.
 3. **Probar también que la validación falla cuando debe.** Una validación que siempre dice "correcto" no prueba nada.
 4. **No sobrecargar.** Con plazo y 30 minutos de presentación, prioricé lo que el comité evalúa por sobre agregar funcionalidades.
