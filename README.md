@@ -20,7 +20,7 @@ cp .env.example .env        # y definir POSTGRES_PASSWORD
 ./ejecutar_recuperacion.sh --auto   # sin pausas (grabación de respaldo)
 ```
 
-En otra terminal, durante la demo, un monitor de solo lectura muestra ambas bases cada 2 s: disponibilidad, estados de las postulaciones, la postulación 50, el archivado de WAL y el resultado de la validación de la etapa 7:
+En otra terminal, durante la demo, un monitor de solo lectura muestra cada 2 s tres columnas: **ANTES** (la foto tomada justo antes del error, con su hora, la hora del error y el XID), **PRINCIPAL** y **RECOVERY**. Para cada una muestra disponibilidad, estados de las postulaciones y la postulación 50; abajo, el archivado de WAL y el resultado de la validación de la etapa 7:
 
 ```bash
 bash scripts/monitor.sh
