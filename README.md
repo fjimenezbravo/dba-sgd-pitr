@@ -132,9 +132,10 @@ Un respaldo que no se ha restaurado no está probado. Propongo:
 - Cifrado, retención por política y monitoreo con alertas.
 - Rescate automático de modificaciones a filas existentes posteriores al incidente.
 
-## 8. Uso de IA
+## 8. Uso de IA y material de presentación
 
-Los registros completos de las conversaciones con IA están en `ai-logs/` (ver `ai-logs/README.md`).
+- **IA:** cómo la usé, qué verifiqué y qué no delegué, en [`ai-logs/uso_de_ia.md`](ai-logs/uso_de_ia.md). Los registros completos están en `ai-logs/`.
+- **Presentación:** [`presentation/Volver_al_minuto_anterior_v4.pptx`](presentation/Volver_al_minuto_anterior_v4.pptx) (17 láminas, con notas del orador) y el guion minuto a minuto con preguntas probables en [`presentation/guion_presentacion.md`](presentation/guion_presentacion.md).
 
 ## 9. Estado del clúster después del PITR
 

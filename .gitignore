@@ -22,3 +22,6 @@ results/restore_point.env
 
 # Referencia local al CSV de registros posteriores
 results/post_incidente_csv.path
+
+# Archivos obsoletos comprimidos (no se publican)
+legacy/

@@ -1,2 +1,0 @@
-Punto PITR: pitr_objetivo_20261029
-LSN del punto: 0/140000C8
