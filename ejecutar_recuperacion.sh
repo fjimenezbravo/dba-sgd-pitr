@@ -1,4 +1,3 @@
-
 #!/usr/bin/env bash
 
 set -Eeuo pipefail
@@ -7,12 +6,26 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT_DIR"
 
 PROJECT="dba-sgd-pitr-demo"
+if [[ -f "$ROOT_DIR/.env" ]]; then
+    PROJECT="$(sed -n 's/^COMPOSE_PROJECT_NAME=//p' "$ROOT_DIR/.env" | tail -n 1)"
+    PROJECT="${PROJECT:-dba-sgd-pitr-demo}"
+fi
+
+# --auto ejecuta todas las etapas sin pausas (grabacion de respaldo, pruebas).
+AUTO=0
+[[ "${1:-}" == "--auto" ]] && AUTO=1
+
+pausa() {
+    if [[ "$AUTO" -eq 0 ]]; then
+        read -r -p "$1"
+    fi
+}
 COMPOSE_FILE="$ROOT_DIR/compose.demo.yaml"
 COMPOSE=(docker compose -p "$PROJECT" -f "$COMPOSE_FILE")
 
 SCRIPTS=(
   "02_backup.sh"
-  "03_punto_recuperacion.sh"
+  "03_cambios_legitimos.sh"
   "04_incidente.sh"
   "05_registros_posteriores.sh"
   "06_restaurar_pitr.sh"
@@ -22,7 +35,7 @@ SCRIPTS=(
 
 NOMBRES=(
   "Respaldo FULL con pgBackRest"
-  "Creación del punto de recuperación"
+  "Cambios legítimos posteriores al respaldo"
   "Simulación del incidente"
   "Preservación de registros posteriores"
   "Recuperación PITR en instancia independiente"
@@ -32,12 +45,12 @@ NOMBRES=(
 
 RESUMENES=(
   "Respaldo FULL ejecutado y verificado."
-  "Restore Point creado antes del incidente."
-  "UPDATE accidental simulado sobre los 100 registros."
+  "Revisiones legítimas aplicadas después del respaldo FULL (solo vuelven vía WAL)."
+  "Foto previa tomada; UPDATE accidental sobre los 100 registros con XID y hora registrados."
   "Tres registros posteriores preservados mediante CSV."
-  "PITR completado. PostgreSQL recuperado disponible en puerto 5433."
+  "PITR hasta justo antes del COMMIT del incidente. Base recuperada en puerto 5433."
   "Tres registros posteriores reincorporados."
-  "Los 100 registros originales coinciden exactamente."
+  "Los 100 registros recuperados son idénticos a la foto previa al UPDATE."
 )
 
 ESTADOS=(
@@ -135,7 +148,7 @@ echo "Proyecto exclusivo: $PROJECT"
 echo "Se eliminarán los contenedores y volúmenes anteriores."
 echo
 
-read -r -p "Presiona ENTER para limpiar e iniciar el laboratorio..."
+pausa "Presiona ENTER para limpiar e iniciar el laboratorio..."
 
 "${COMPOSE[@]}" down --volumes --remove-orphans
 
@@ -194,7 +207,7 @@ for i in "${!SCRIPTS[@]}"; do
     echo "=================================================="
     echo
 
-    read -r -p "Presiona ENTER para ejecutar esta etapa..."
+    pausa "Presiona ENTER para ejecutar esta etapa..."
 
     if bash "$RUTA"; then
         ESTADOS[$i]="COMPLETADO"
@@ -214,7 +227,7 @@ for i in "${!SCRIPTS[@]}"; do
     mostrar_checklist
 
     if (( i < ${#SCRIPTS[@]} - 1 )); then
-        read -r -p "Presiona ENTER para continuar..."
+        pausa "Presiona ENTER para continuar..."
     fi
 done
 

@@ -1,0 +1,32 @@
+=== CAMBIOS LEGITIMOS POSTERIORES AL RESPALDO ===
+Sat Oct 31 11:11:28 -03 2026
+
+Estos cambios ocurren despues del respaldo FULL: solo pueden volver
+si la recuperacion reproduce el WAL archivado, no basta el respaldo base.
+
+[1] Estado antes de los cambios
+     estado      | count 
+-----------------+-------
+ en_revision     |    34
+ pendiente       |    33
+ preseleccionada |    33
+(3 rows)
+
+[2] Revisores aprueban y preseleccionan postulaciones
+UPDATE 10
+UPDATE 5
+
+[3] Estado despues de los cambios
+     estado      | count 
+-----------------+-------
+ aprobada        |    10
+ en_revision     |    29
+ pendiente       |    28
+ preseleccionada |    33
+(4 rows)
+
+[4] Creando restore point preventivo (plan B): pitr_objetivo_20261031_111128
+LSN: 0/40050A8
+
+CAMBIOS LEGITIMOS REGISTRADOS
+Sat Oct 31 11:11:28 -03 2026

@@ -8,7 +8,7 @@ if [[ -f .env ]]; then
   COMPOSE_PROJECT_NAME="$(sed -n 's/^COMPOSE_PROJECT_NAME=//p' .env | tail -n 1)"
 fi
 
-COMPOSE_PROJECT_NAME="$COMPOSE_PROJECT_NAME"
+COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-dba-sgd-pitr-demo}"
 [[ "$COMPOSE_PROJECT_NAME" =~ ^[a-z0-9][a-z0-9_-]*$ ]] || {
   echo "ERROR: COMPOSE_PROJECT_NAME contiene caracteres no permitidos."
   exit 1

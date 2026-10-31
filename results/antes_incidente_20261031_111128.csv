@@ -1,0 +1,101 @@
+id,nombre_postulante,cargo,region,estado,creado_en,observacion
+1,Ana Perez,Administrador de Bases de Datos,Metropolitana,aprobada,2026-10-20 09:00:00+00,Revision legitima: aprobada por revisor
+2,Luis Gonzalez,Administrador de Sistemas,Valparaiso,aprobada,2026-10-20 09:10:00+00,Revision legitima: aprobada por revisor
+3,Maria Soto,Analista de Datos,Biobio,aprobada,2026-10-20 09:20:00+00,Revision legitima: aprobada por revisor
+4,Pedro Rojas,Ingeniero de Infraestructura,Araucania,aprobada,2026-10-20 09:30:00+00,Revision legitima: aprobada por revisor
+5,Carolina Diaz,Administrador de Bases de Datos,Los Lagos,aprobada,2026-10-20 09:40:00+00,Revision legitima: aprobada por revisor
+6,Diego Munoz,Administrador de Sistemas,Metropolitana,aprobada,2026-10-20 09:50:00+00,Revision legitima: aprobada por revisor
+7,Camila Silva,Analista de Datos,Valparaiso,aprobada,2026-10-20 10:00:00+00,Revision legitima: aprobada por revisor
+8,Felipe Torres,Ingeniero de Infraestructura,Biobio,aprobada,2026-10-20 10:10:00+00,Revision legitima: aprobada por revisor
+9,Andrea Morales,Administrador de Bases de Datos,Araucania,aprobada,2026-10-20 10:20:00+00,Revision legitima: aprobada por revisor
+10,Javier Contreras,Administrador de Sistemas,Los Lagos,aprobada,2026-10-20 10:30:00+00,Revision legitima: aprobada por revisor
+11,Ana Perez,Analista de Datos,Metropolitana,preseleccionada,2026-10-20 10:40:00+00,Revision legitima: preseleccionada por revisor
+12,Luis Gonzalez,Ingeniero de Infraestructura,Valparaiso,preseleccionada,2026-10-20 10:50:00+00,Revision legitima: preseleccionada por revisor
+13,Maria Soto,Administrador de Bases de Datos,Biobio,preseleccionada,2026-10-20 11:00:00+00,Revision legitima: preseleccionada por revisor
+14,Pedro Rojas,Administrador de Sistemas,Araucania,preseleccionada,2026-10-20 11:10:00+00,Revision legitima: preseleccionada por revisor
+15,Carolina Diaz,Analista de Datos,Los Lagos,preseleccionada,2026-10-20 11:20:00+00,Revision legitima: preseleccionada por revisor
+16,Diego Munoz,Ingeniero de Infraestructura,Metropolitana,en_revision,2026-10-20 11:30:00+00,Registro ficticio de prueba 16
+17,Camila Silva,Administrador de Bases de Datos,Valparaiso,preseleccionada,2026-10-20 11:40:00+00,Registro ficticio de prueba 17
+18,Felipe Torres,Administrador de Sistemas,Biobio,pendiente,2026-10-20 11:50:00+00,Registro ficticio de prueba 18
+19,Andrea Morales,Analista de Datos,Araucania,en_revision,2026-10-20 12:00:00+00,Registro ficticio de prueba 19
+20,Javier Contreras,Ingeniero de Infraestructura,Los Lagos,preseleccionada,2026-10-20 12:10:00+00,Registro ficticio de prueba 20
+21,Ana Perez,Administrador de Bases de Datos,Metropolitana,pendiente,2026-10-20 12:20:00+00,Registro ficticio de prueba 21
+22,Luis Gonzalez,Administrador de Sistemas,Valparaiso,en_revision,2026-10-20 12:30:00+00,Registro ficticio de prueba 22
+23,Maria Soto,Analista de Datos,Biobio,preseleccionada,2026-10-20 12:40:00+00,Registro ficticio de prueba 23
+24,Pedro Rojas,Ingeniero de Infraestructura,Araucania,pendiente,2026-10-20 12:50:00+00,Registro ficticio de prueba 24
+25,Carolina Diaz,Administrador de Bases de Datos,Los Lagos,en_revision,2026-10-20 13:00:00+00,Registro ficticio de prueba 25
+26,Diego Munoz,Administrador de Sistemas,Metropolitana,preseleccionada,2026-10-20 13:10:00+00,Registro ficticio de prueba 26
+27,Camila Silva,Analista de Datos,Valparaiso,pendiente,2026-10-20 13:20:00+00,Registro ficticio de prueba 27
+28,Felipe Torres,Ingeniero de Infraestructura,Biobio,en_revision,2026-10-20 13:30:00+00,Registro ficticio de prueba 28
+29,Andrea Morales,Administrador de Bases de Datos,Araucania,preseleccionada,2026-10-20 13:40:00+00,Registro ficticio de prueba 29
+30,Javier Contreras,Administrador de Sistemas,Los Lagos,pendiente,2026-10-20 13:50:00+00,Registro ficticio de prueba 30
+31,Ana Perez,Analista de Datos,Metropolitana,en_revision,2026-10-20 14:00:00+00,Registro ficticio de prueba 31
+32,Luis Gonzalez,Ingeniero de Infraestructura,Valparaiso,preseleccionada,2026-10-20 14:10:00+00,Registro ficticio de prueba 32
+33,Maria Soto,Administrador de Bases de Datos,Biobio,pendiente,2026-10-20 14:20:00+00,Registro ficticio de prueba 33
+34,Pedro Rojas,Administrador de Sistemas,Araucania,en_revision,2026-10-20 14:30:00+00,Registro ficticio de prueba 34
+35,Carolina Diaz,Analista de Datos,Los Lagos,preseleccionada,2026-10-20 14:40:00+00,Registro ficticio de prueba 35
+36,Diego Munoz,Ingeniero de Infraestructura,Metropolitana,pendiente,2026-10-20 14:50:00+00,Registro ficticio de prueba 36
+37,Camila Silva,Administrador de Bases de Datos,Valparaiso,en_revision,2026-10-20 15:00:00+00,Registro ficticio de prueba 37
+38,Felipe Torres,Administrador de Sistemas,Biobio,preseleccionada,2026-10-20 15:10:00+00,Registro ficticio de prueba 38
+39,Andrea Morales,Analista de Datos,Araucania,pendiente,2026-10-20 15:20:00+00,Registro ficticio de prueba 39
+40,Javier Contreras,Ingeniero de Infraestructura,Los Lagos,en_revision,2026-10-20 15:30:00+00,Registro ficticio de prueba 40
+41,Ana Perez,Administrador de Bases de Datos,Metropolitana,preseleccionada,2026-10-20 15:40:00+00,Registro ficticio de prueba 41
+42,Luis Gonzalez,Administrador de Sistemas,Valparaiso,pendiente,2026-10-20 15:50:00+00,Registro ficticio de prueba 42
+43,Maria Soto,Analista de Datos,Biobio,en_revision,2026-10-20 16:00:00+00,Registro ficticio de prueba 43
+44,Pedro Rojas,Ingeniero de Infraestructura,Araucania,preseleccionada,2026-10-20 16:10:00+00,Registro ficticio de prueba 44
+45,Carolina Diaz,Administrador de Bases de Datos,Los Lagos,pendiente,2026-10-20 16:20:00+00,Registro ficticio de prueba 45
+46,Diego Munoz,Administrador de Sistemas,Metropolitana,en_revision,2026-10-20 16:30:00+00,Registro ficticio de prueba 46
+47,Camila Silva,Analista de Datos,Valparaiso,preseleccionada,2026-10-20 16:40:00+00,Registro ficticio de prueba 47
+48,Felipe Torres,Ingeniero de Infraestructura,Biobio,pendiente,2026-10-20 16:50:00+00,Registro ficticio de prueba 48
+49,Andrea Morales,Administrador de Bases de Datos,Araucania,en_revision,2026-10-20 17:00:00+00,Registro ficticio de prueba 49
+50,Javier Contreras,Administrador de Sistemas,Los Lagos,aprobada,2026-10-20 17:10:00+00,Revision legitima: aprobada segundos antes del incidente
+51,Ana Perez,Analista de Datos,Metropolitana,pendiente,2026-10-20 17:20:00+00,Registro ficticio de prueba 51
+52,Luis Gonzalez,Ingeniero de Infraestructura,Valparaiso,en_revision,2026-10-20 17:30:00+00,Registro ficticio de prueba 52
+53,Maria Soto,Administrador de Bases de Datos,Biobio,preseleccionada,2026-10-20 17:40:00+00,Registro ficticio de prueba 53
+54,Pedro Rojas,Administrador de Sistemas,Araucania,pendiente,2026-10-20 17:50:00+00,Registro ficticio de prueba 54
+55,Carolina Diaz,Analista de Datos,Los Lagos,en_revision,2026-10-20 18:00:00+00,Registro ficticio de prueba 55
+56,Diego Munoz,Ingeniero de Infraestructura,Metropolitana,preseleccionada,2026-10-20 18:10:00+00,Registro ficticio de prueba 56
+57,Camila Silva,Administrador de Bases de Datos,Valparaiso,pendiente,2026-10-20 18:20:00+00,Registro ficticio de prueba 57
+58,Felipe Torres,Administrador de Sistemas,Biobio,en_revision,2026-10-20 18:30:00+00,Registro ficticio de prueba 58
+59,Andrea Morales,Analista de Datos,Araucania,preseleccionada,2026-10-20 18:40:00+00,Registro ficticio de prueba 59
+60,Javier Contreras,Ingeniero de Infraestructura,Los Lagos,pendiente,2026-10-20 18:50:00+00,Registro ficticio de prueba 60
+61,Ana Perez,Administrador de Bases de Datos,Metropolitana,en_revision,2026-10-20 19:00:00+00,Registro ficticio de prueba 61
+62,Luis Gonzalez,Administrador de Sistemas,Valparaiso,preseleccionada,2026-10-20 19:10:00+00,Registro ficticio de prueba 62
+63,Maria Soto,Analista de Datos,Biobio,pendiente,2026-10-20 19:20:00+00,Registro ficticio de prueba 63
+64,Pedro Rojas,Ingeniero de Infraestructura,Araucania,en_revision,2026-10-20 19:30:00+00,Registro ficticio de prueba 64
+65,Carolina Diaz,Administrador de Bases de Datos,Los Lagos,preseleccionada,2026-10-20 19:40:00+00,Registro ficticio de prueba 65
+66,Diego Munoz,Administrador de Sistemas,Metropolitana,pendiente,2026-10-20 19:50:00+00,Registro ficticio de prueba 66
+67,Camila Silva,Analista de Datos,Valparaiso,en_revision,2026-10-20 20:00:00+00,Registro ficticio de prueba 67
+68,Felipe Torres,Ingeniero de Infraestructura,Biobio,preseleccionada,2026-10-20 20:10:00+00,Registro ficticio de prueba 68
+69,Andrea Morales,Administrador de Bases de Datos,Araucania,pendiente,2026-10-20 20:20:00+00,Registro ficticio de prueba 69
+70,Javier Contreras,Administrador de Sistemas,Los Lagos,en_revision,2026-10-20 20:30:00+00,Registro ficticio de prueba 70
+71,Ana Perez,Analista de Datos,Metropolitana,preseleccionada,2026-10-20 20:40:00+00,Registro ficticio de prueba 71
+72,Luis Gonzalez,Ingeniero de Infraestructura,Valparaiso,pendiente,2026-10-20 20:50:00+00,Registro ficticio de prueba 72
+73,Maria Soto,Administrador de Bases de Datos,Biobio,en_revision,2026-10-20 21:00:00+00,Registro ficticio de prueba 73
+74,Pedro Rojas,Administrador de Sistemas,Araucania,preseleccionada,2026-10-20 21:10:00+00,Registro ficticio de prueba 74
+75,Carolina Diaz,Analista de Datos,Los Lagos,pendiente,2026-10-20 21:20:00+00,Registro ficticio de prueba 75
+76,Diego Munoz,Ingeniero de Infraestructura,Metropolitana,en_revision,2026-10-20 21:30:00+00,Registro ficticio de prueba 76
+77,Camila Silva,Administrador de Bases de Datos,Valparaiso,preseleccionada,2026-10-20 21:40:00+00,Registro ficticio de prueba 77
+78,Felipe Torres,Administrador de Sistemas,Biobio,pendiente,2026-10-20 21:50:00+00,Registro ficticio de prueba 78
+79,Andrea Morales,Analista de Datos,Araucania,en_revision,2026-10-20 22:00:00+00,Registro ficticio de prueba 79
+80,Javier Contreras,Ingeniero de Infraestructura,Los Lagos,preseleccionada,2026-10-20 22:10:00+00,Registro ficticio de prueba 80
+81,Ana Perez,Administrador de Bases de Datos,Metropolitana,pendiente,2026-10-20 22:20:00+00,Registro ficticio de prueba 81
+82,Luis Gonzalez,Administrador de Sistemas,Valparaiso,en_revision,2026-10-20 22:30:00+00,Registro ficticio de prueba 82
+83,Maria Soto,Analista de Datos,Biobio,preseleccionada,2026-10-20 22:40:00+00,Registro ficticio de prueba 83
+84,Pedro Rojas,Ingeniero de Infraestructura,Araucania,pendiente,2026-10-20 22:50:00+00,Registro ficticio de prueba 84
+85,Carolina Diaz,Administrador de Bases de Datos,Los Lagos,en_revision,2026-10-20 23:00:00+00,Registro ficticio de prueba 85
+86,Diego Munoz,Administrador de Sistemas,Metropolitana,preseleccionada,2026-10-20 23:10:00+00,Registro ficticio de prueba 86
+87,Camila Silva,Analista de Datos,Valparaiso,pendiente,2026-10-20 23:20:00+00,Registro ficticio de prueba 87
+88,Felipe Torres,Ingeniero de Infraestructura,Biobio,en_revision,2026-10-20 23:30:00+00,Registro ficticio de prueba 88
+89,Andrea Morales,Administrador de Bases de Datos,Araucania,preseleccionada,2026-10-20 23:40:00+00,Registro ficticio de prueba 89
+90,Javier Contreras,Administrador de Sistemas,Los Lagos,pendiente,2026-10-20 23:50:00+00,Registro ficticio de prueba 90
+91,Ana Perez,Analista de Datos,Metropolitana,en_revision,2026-10-21 00:00:00+00,Registro ficticio de prueba 91
+92,Luis Gonzalez,Ingeniero de Infraestructura,Valparaiso,preseleccionada,2026-10-21 00:10:00+00,Registro ficticio de prueba 92
+93,Maria Soto,Administrador de Bases de Datos,Biobio,pendiente,2026-10-21 00:20:00+00,Registro ficticio de prueba 93
+94,Pedro Rojas,Administrador de Sistemas,Araucania,en_revision,2026-10-21 00:30:00+00,Registro ficticio de prueba 94
+95,Carolina Diaz,Analista de Datos,Los Lagos,preseleccionada,2026-10-21 00:40:00+00,Registro ficticio de prueba 95
+96,Diego Munoz,Ingeniero de Infraestructura,Metropolitana,pendiente,2026-10-21 00:50:00+00,Registro ficticio de prueba 96
+97,Camila Silva,Administrador de Bases de Datos,Valparaiso,en_revision,2026-10-21 01:00:00+00,Registro ficticio de prueba 97
+98,Felipe Torres,Administrador de Sistemas,Biobio,preseleccionada,2026-10-21 01:10:00+00,Registro ficticio de prueba 98
+99,Andrea Morales,Analista de Datos,Araucania,pendiente,2026-10-21 01:20:00+00,Registro ficticio de prueba 99
+100,Javier Contreras,Ingeniero de Infraestructura,Los Lagos,en_revision,2026-10-21 01:30:00+00,Registro ficticio de prueba 100

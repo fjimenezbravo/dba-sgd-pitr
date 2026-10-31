@@ -1,0 +1,27 @@
+=== VALIDACION DE INTEGRIDAD DE LOS 100 REGISTROS ORIGINALES ===
+Sat Oct 31 11:11:34 -03 2026
+Referencia: results/antes_incidente_20261031_111128.csv (foto tomada justo antes del UPDATE)
+Columnas comparadas: id, nombre_postulante, cargo, region, estado, creado_en, observacion
+
+[1] Exportando registros originales de la base recuperada (5433)
+
+[2] Comprobando cantidad de filas
+Foto previa: 100 registros
+Recovery:    100 registros
+
+[3] Comparando todas las columnas contra la foto previa
+CORRECTO: los 100 registros recuperados son identicos al estado previo al UPDATE.
+
+[4] Huella MD5 de ambos conjuntos
+Foto previa: 968e72f6daf90fba0028f8c3009ac2c8  -
+Recovery:    968e72f6daf90fba0028f8c3009ac2c8  -
+
+[5] Contraste: la base principal sigue con el dano del incidente
+  estado   | count 
+-----------+-------
+ rechazada |   100
+(1 row)
+
+
+VALIDACION DE INTEGRIDAD COMPLETADA
+Sat Oct 31 11:11:34 -03 2026

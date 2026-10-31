@@ -1,0 +1,34 @@
+=== SIMULACION DEL INCIDENTE ===
+Sat Oct 31 11:11:28 -03 2026
+
+[2] Ultimo cambio legitimo antes del incidente (id 50)
+UPDATE 1
+
+[3] Foto del estado previo (todas las columnas): results/antes_incidente_20261031_111128.csv
+     estado      | count 
+-----------------+-------
+ aprobada        |    11
+ en_revision     |    29
+ pendiente       |    28
+ preseleccionada |    32
+(4 rows)
+
+[4] Ejecutando UPDATE accidental (hora del servidor y XID registrados)
+BEGIN
+XID_INCIDENTE=746
+HORA_INCIDENTE=2026-10-31 14:11:30.871975+00
+UPDATE 100
+AFECTADOS=100
+COMMIT
+
+[5] Verificando impacto
+  estado   | count 
+-----------+-------
+ rechazada |   100
+(1 row)
+
+
+INCIDENTE SIMULADO
+XID del incidente : 746
+Hora del incidente: 2026-10-31 14:11:30.871975+00
+Sat Oct 31 11:11:30 -03 2026
