@@ -144,7 +144,7 @@ Un respaldo que no se ha restaurado no está probado. Propongo:
 
 - Pérdida del equipo completo, porque el repositorio está en el mismo host.
 - Alta disponibilidad, réplicas y conmutación automática.
-- Cifrado, retención por política y monitoreo con alertas.
+- Cifrado, retención por política y monitoreo con alertas automáticas. El monitor de la demostración es de solo lectura y no reemplaza una plataforma de monitoreo operacional.
 - Rescate automático de modificaciones a filas existentes posteriores al incidente.
 
 ## 8. Uso de IA y material de presentación
