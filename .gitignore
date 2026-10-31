@@ -29,5 +29,9 @@ legacy/
 # Material personal de ensayo (no es parte de la entrega)
 presentation/guion_presentacion.md
 
+# Grabación de respaldo de la demo (se usa en la sala, no se publica)
+presentation/*.mov
+presentation/*.mp4
+
 # Archivos de bloqueo de Office mientras un documento está abierto
 ~$*
