@@ -15,9 +15,30 @@ fi
 AUTO=0
 [[ "${1:-}" == "--auto" ]] && AUTO=1
 
+# Colores solo en una terminal: al redirigir a un archivo (o con NO_COLOR)
+# la salida queda en texto plano.
+if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
+    ROJO=$'\033[1;31m'; VERDE=$'\033[1;32m'; AMARILLO=$'\033[1;33m'
+    CIAN=$'\033[1;36m'; GRIS=$'\033[0;90m'; NEGRITA=$'\033[1m'; NORMAL=$'\033[0m'
+else
+    ROJO=""; VERDE=""; AMARILLO=""; CIAN=""; GRIS=""; NEGRITA=""; NORMAL=""
+fi
+
+titulo() {
+    echo "${CIAN}$1${NORMAL}"
+}
+
+ok() {
+    echo "${VERDE}[OK]${NORMAL} $1"
+}
+
+error() {
+    echo "${ROJO}[ERROR] $1${NORMAL}"
+}
+
 pausa() {
     if [[ "$AUTO" -eq 0 ]]; then
-        read -r -p "$1"
+        read -r -p "${GRIS}$1${NORMAL}"
     fi
 }
 COMPOSE_FILE="$ROOT_DIR/compose.demo.yaml"
@@ -63,32 +84,32 @@ mostrar_checklist() {
     local j
 
     echo
-    echo "========== CHECKLIST DE RECUPERACIÓN =========="
+    titulo "========== CHECKLIST DE RECUPERACIÓN =========="
 
     for j in "${!SCRIPTS[@]}"; do
         case "${ESTADOS[$j]}" in
             COMPLETADO)
-                echo "[✓] ${NOMBRES[$j]}"
+                echo "${VERDE}[✓]${NORMAL} ${NOMBRES[$j]}"
                 completadas=$((completadas + 1))
                 ;;
             "EN CURSO")
-                echo "[>] ${NOMBRES[$j]}  <-- EN CURSO"
+                echo "${AMARILLO}[>] ${NOMBRES[$j]}  <-- EN CURSO${NORMAL}"
                 ;;
             *)
-                echo "[ ] ${NOMBRES[$j]}"
+                echo "${GRIS}[ ] ${NOMBRES[$j]}${NORMAL}"
                 ;;
         esac
     done
 
     echo
-    echo "Progreso: $completadas/${#SCRIPTS[@]} etapas completadas"
-    echo "==============================================="
+    echo "${NEGRITA}Progreso: $completadas/${#SCRIPTS[@]} etapas completadas${NORMAL}"
+    titulo "==============================================="
 }
 
 fallo() {
     local codigo=$?
     echo
-    echo "[ERROR] La demostración se interrumpió."
+    error "La demostración se interrumpió."
     echo "Código de salida: $codigo"
     echo "El entorno se conserva para diagnóstico."
     exit "$codigo"
@@ -97,37 +118,37 @@ fallo() {
 trap fallo ERR
 
 echo
-echo "=================================================="
-echo "       DEMOSTRACIÓN DE RECUPERACIÓN PITR"
+titulo "=================================================="
+echo "${NEGRITA}       DEMOSTRACIÓN DE RECUPERACIÓN PITR${NORMAL}"
 echo "       PostgreSQL 17 + pgBackRest"
-echo "=================================================="
+titulo "=================================================="
 
 # --------------------------------------------------
 # PREVALIDACIÓN
 # --------------------------------------------------
 
 echo
-echo "========== PREVALIDACIÓN =========="
+titulo "========== PREVALIDACIÓN =========="
 
 [[ -f "$COMPOSE_FILE" ]] || {
-    echo "ERROR: No existe compose.demo.yaml."
+    error "No existe compose.demo.yaml."
     exit 1
 }
 
 [[ -f "$ROOT_DIR/.env" ]] || {
-    echo "ERROR: No existe .env."
+    error "No existe .env."
     exit 1
 }
 
 for SCRIPT in "${SCRIPTS[@]}"; do
     [[ -f "$ROOT_DIR/scripts/$SCRIPT" ]] || {
-        echo "ERROR: No existe scripts/$SCRIPT."
+        error "No existe scripts/$SCRIPT."
         exit 1
     }
 done
 
 command -v docker >/dev/null 2>&1 || {
-    echo "ERROR: Docker no está instalado o no está disponible."
+    error "Docker no está instalado o no está disponible."
     exit 1
 }
 
@@ -136,16 +157,16 @@ docker info >/dev/null
 # Comprueba que Compose y las variables sean válidos
 "${COMPOSE[@]}" config -q
 
-echo "[OK] Archivos, Docker y configuración verificados."
+ok "Archivos, Docker y configuración verificados."
 
 # --------------------------------------------------
 # LIMPIEZA INICIAL DEL PROYECTO
 # --------------------------------------------------
 
 echo
-echo "========== LIMPIEZA INICIAL =========="
+titulo "========== LIMPIEZA INICIAL =========="
 echo "Proyecto exclusivo: $PROJECT"
-echo "Se eliminarán los contenedores y volúmenes anteriores."
+echo "${AMARILLO}Se eliminarán los contenedores y volúmenes anteriores.${NORMAL}"
 echo
 
 pausa "Presiona ENTER para limpiar e iniciar el laboratorio..."
@@ -153,14 +174,14 @@ pausa "Presiona ENTER para limpiar e iniciar el laboratorio..."
 "${COMPOSE[@]}" down --volumes --remove-orphans
 
 echo
-echo "[OK] Entorno anterior del proyecto eliminado."
+ok "Entorno anterior del proyecto eliminado."
 
 # --------------------------------------------------
 # PREPARACIÓN DEL LABORATORIO
 # --------------------------------------------------
 
 echo
-echo "========== PREPARACIÓN DEL LABORATORIO =========="
+titulo "========== PREPARACIÓN DEL LABORATORIO =========="
 
 "${COMPOSE[@]}" up -d --build postgres
 
@@ -180,11 +201,11 @@ for intento in {1..60}; do
 done
 
 if [[ "$DISPONIBLE" -ne 1 ]]; then
-    echo "ERROR: PostgreSQL no estuvo disponible en 120 segundos."
+    error "PostgreSQL no estuvo disponible en 120 segundos."
     exit 1
 fi
 
-echo "[OK] PostgreSQL principal disponible en puerto 5432."
+ok "PostgreSQL principal disponible en puerto 5432."
 
 # --------------------------------------------------
 # EJECUCIÓN DE LAS SIETE ETAPAS
@@ -201,10 +222,10 @@ for i in "${!SCRIPTS[@]}"; do
     mostrar_checklist
 
     echo
-    echo "=================================================="
-    echo "ETAPA $((i + 1))/${#SCRIPTS[@]}: $NOMBRE"
-    echo "Script: $SCRIPT"
-    echo "=================================================="
+    titulo "=================================================="
+    echo "${AMARILLO}ETAPA $((i + 1))/${#SCRIPTS[@]}: $NOMBRE${NORMAL}"
+    echo "${GRIS}Script: $SCRIPT${NORMAL}"
+    titulo "=================================================="
     echo
 
     pausa "Presiona ENTER para ejecutar esta etapa..."
@@ -213,12 +234,12 @@ for i in "${!SCRIPTS[@]}"; do
         ESTADOS[$i]="COMPLETADO"
 
         echo
-        echo "[OK] Etapa $((i + 1)) completada."
-        echo "RESUMEN: ${RESUMENES[$i]}"
+        ok "Etapa $((i + 1)) completada."
+        echo "${NEGRITA}RESUMEN:${NORMAL} ${RESUMENES[$i]}"
 
     else
         echo
-        echo "[ERROR] Falló la etapa: $NOMBRE."
+        error "Falló la etapa: $NOMBRE."
         echo "Se detiene la demostración."
         echo "No se ejecutará la limpieza."
         exit 1
@@ -236,31 +257,31 @@ done
 # --------------------------------------------------
 
 echo
-echo "=================================================="
-echo "          RECUPERACIÓN COMPLETADA"
-echo "=================================================="
+titulo "=================================================="
+echo "${VERDE}          RECUPERACIÓN COMPLETADA${NORMAL}"
+titulo "=================================================="
 
 mostrar_checklist
 
 echo
-echo "RESULTADOS FINALES"
+echo "${NEGRITA}RESULTADOS FINALES${NORMAL}"
 echo "----------------------------------------------"
 echo "PostgreSQL principal : puerto 5432"
 echo "PostgreSQL recovery  : puerto 5433"
-echo "Registros originales: 100"
-echo "Registros posteriores: 3"
-echo "Total reconciliado   : 103"
-echo "Registros rechazados : 0"
-echo "Integridad           : VALIDADA"
+echo "Registros originales: ${VERDE}100${NORMAL}"
+echo "Registros posteriores: ${VERDE}3${NORMAL}"
+echo "Total reconciliado   : ${VERDE}103${NORMAL}"
+echo "Registros rechazados : ${VERDE}0${NORMAL}"
+echo "Integridad           : ${VERDE}VALIDADA${NORMAL}"
 echo
 echo "Evidencias disponibles en: results/"
 echo
 echo "Contenedores y volúmenes permanecen activos."
 echo "No se ejecutará limpieza al finalizar."
 echo
-echo "=================================================="
-echo "       FIN DE LA DEMOSTRACIÓN PITR"
-echo "=================================================="
+titulo "=================================================="
+echo "${NEGRITA}       FIN DE LA DEMOSTRACIÓN PITR${NORMAL}"
+titulo "=================================================="
 
 
 
