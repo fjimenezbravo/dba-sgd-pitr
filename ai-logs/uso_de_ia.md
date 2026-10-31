@@ -1,6 +1,6 @@
 # Cómo usé la IA en esta prueba
 
-El enunciado pide usar IA y mostrar *"registros reales donde se ve a la persona guiando, cuestionando y verificando"*. Este documento resume cómo la usé. Cada punto se puede comprobar en los registros completos de esta carpeta.
+El enunciado pide usar IA y mostrar *"registros reales donde se ve a la persona guiando, cuestionando y verificando"*. Este documento resume cómo la usé. Cada punto se puede comprobar en el registro de esta carpeta.
 
 ## Herramienta y rol
 
@@ -10,8 +10,8 @@ El enunciado pide usar IA y mostrar *"registros reales donde se ve a la persona 
 
 ## Mis reglas de uso
 
-1. **La IA propone, yo decido.** Ninguna propuesta se aplicó sin que yo la pidiera explícitamente.
-2. **Nada se da por bueno sin una corrida real.** Cada cambio se probó con la demo completa y se revisó la evidencia en `results/`.
+1. **La IA propone, yo decido.** Las decisiones de alcance fueron mías. Dentro de las tareas que pedí, la IA aplicó algunos ajustes menores que no solicité de forma explícita (por ejemplo, corregir el shebang del orquestador y agregar el modo `--auto`); los revisé y quedaron registrados.
+2. **Nada se da por bueno sin una corrida real.** Cada cambio de código se probó con la demo completa y se revisó la evidencia en `results/`. Los cambios de documentación y de la presentación se revisaron visualmente.
 3. **Probar también que la validación falla cuando debe.** Una validación que siempre dice "correcto" no prueba nada.
 4. **No sobrecargar.** Con plazo y 30 minutos de presentación, prioricé lo que el comité evalúa por sobre agregar funcionalidades.
 
@@ -65,4 +65,4 @@ La idea de un monitor visual llegó de otra fuente. Antes de implementarlo, lo e
 
 ## Qué contienen los registros
 
-Los archivos `.jsonl` de esta carpeta son las conversaciones completas, sin editar: cada mensaje, cada comando ejecutado y su resultado.
+Los archivos `.jsonl` de esta carpeta son copias sin editar de la sesión de Claude Code del 31-oct: cada mensaje, cada comando ejecutado y su resultado, hasta el momento de su última copia.

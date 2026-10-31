@@ -55,6 +55,8 @@ La recuperación se hace **en paralelo, sin tocar la base dañada**. Así se con
       └──────────── restore + replay de WAL hasta justo antes del COMMIT ┘
 ```
 
+El XID cambia entre corridas: fue 746 en la corrida de referencia y 758 en corridas interactivas con pausas, en que procesos internos como el autoanálisis consumen XID. El script 04 lo registra en cada corrida y el monitor lo muestra.
+
 ## 3. Etapas
 
 | # | Script | Qué hace |
@@ -84,8 +86,8 @@ En esa corrida, `pg_stat_archiver` muestra `failed_count = 2` sobre el primer se
 |---|---|
 | Tamaño de la base / respaldo FULL en repo (comprimido) | 29,3 MB / 3,8 MB |
 | Duración del respaldo FULL | 1,8 s |
-| `pgbackrest restore` (copia de archivos) | 0,76 s |
-| RTO técnico (inicio de restore → base promovida y escribible) | 2–3 s |
+| `pgbackrest restore` (copia de archivos) | 0,73 s (727 ms) |
+| RTO técnico (inicio de restore → base promovida y escribible) | 3 s (resolución de 1 s) |
 | Registros originales idénticos a la foto previa (7 columnas) | 100 / 100 (MD5 igual) |
 | Registros posteriores rescatados | 3 / 3 → total 103, 0 rechazados |
 
@@ -104,7 +106,7 @@ Para un RPO ≈ 0 haría falta replicación en streaming o `pg_receivewal` hacia
 Frente a un error lógico como este `UPDATE`, la pérdida es **cero**: se vuelve al instante anterior y lo posterior se rescata.
 
 **2. ¿Cuánto tarda en volver a estar disponible (RTO)? ¿Cómo crece?**
-Medido: 2–3 s para 29 MB. El tiempo crece con:
+Medido: 3 s para 29 MB, con resolución de 1 s; el script consulta una vez por segundo si la base ya fue promovida, así que es una cota superior. En una corrida con el log de PostgreSQL disponible (31-oct, 14:09), la base quedó lista para escribir entre 1,2 y 2,2 s después de iniciar la restauración, y el arranque de PostgreSQL (reproducción del WAL y promoción) tomó 0,24 s. El tiempo crece con:
 - **el tamaño de la base**: la copia de archivos es aproximadamente lineal. Se acelera con `process-max`, discos rápidos y un repositorio cercano;
 - **el WAL acumulado desde el último FULL**: se reproduce uno por uno. Respaldos más frecuentes (diferenciales o incrementales diarios) acotan este término.
 
