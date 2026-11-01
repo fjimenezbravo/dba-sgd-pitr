@@ -94,14 +94,16 @@ En esa corrida, `pg_stat_archiver` muestra `failed_count = 2` sobre el primer se
 ## 5. Respuestas a las preguntas
 
 **1. Si se pierde el disco de la base, ¿cuántos datos se pierden (RPO)?**
-Se pierde lo que estaba en el WAL **aún no archivado**. Un segmento se archiva cuando se llena (16 MB) o, como máximo, cada `archive_timeout` = **60 s**. Con poca carga, el RPO es como máximo 60 s; con mucha carga, el segmento se llena antes y el RPO baja.
+Se pierde el WAL que **no alcanzó a archivarse** en la bóveda. El RPO depende del WAL efectivamente archivado al momento de la falla y del **retraso del archivado**:
+- `archive_timeout=60s` cierra el segmento en curso como máximo cada 60 s, si hubo cambios; un segmento también se cierra al llenarse (16 MB).
+- Después, `archive-push` tiene que comprimirlo y copiarlo a la bóveda: a esos 60 s se suma lo que tarde el archivado.
+- Si el archivado se atrasa o falla (bóveda lenta, red caída, errores), el WAL pendiente se acumula en `pg_wal` y la pérdida crece **sin un límite máximo garantizado**.
 
-Depende de:
-- `archive_timeout`;
-- que `archive-push` funcione (si falla, el WAL se acumula sin respaldar y el RPO crece);
-- **que el repositorio no esté en el mismo disco** (ver pregunta 4).
+Por eso `archive_timeout=60s` **no garantiza** un RPO máximo de 60 s. Con el archivado al día, la pérdida esperable es del orden de un minuto más la demora del archivado; hay que vigilar ese retraso (`pg_stat_archiver`; el monitor de la demo muestra si el archivado está al día).
 
-Para un RPO ≈ 0 haría falta replicación en streaming o `pg_receivewal` hacia otro servidor.
+**Este laboratorio no mide un RPO garantizado ante pérdida del disco:** esa falla no se simuló, y la bóveda está en el mismo equipo (ver pregunta 4), así que perder el equipo implicaría perder también los respaldos.
+
+Para reducir el RPO se puede usar replicación en streaming o `pg_receivewal` hacia otro servidor, que reciben el WAL casi en tiempo real. Pero `pg_receivewal` no garantiza un RPO cero: para ese objetivo se requiere una arquitectura y una política de confirmación adecuadas, por ejemplo replicación síncrona correctamente configurada.
 
 Frente a un error lógico como este `UPDATE`, la pérdida es **cero**: se vuelve al instante anterior y lo posterior se rescata.
 
