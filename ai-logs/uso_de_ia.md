@@ -1,10 +1,10 @@
 # Cómo usé la IA en esta prueba
 
-El enunciado pide usar IA y mostrar *"registros reales donde se ve a la persona guiando, cuestionando y verificando"*. Este documento resume cómo la usé. Cada punto se puede comprobar en el registro de esta carpeta.
+El enunciado pide usar IA y mostrar *"registros reales donde se ve a la persona guiando, cuestionando y verificando"*. Este documento resume cómo la usé. Cada punto se puede comprobar en los registros de esta carpeta.
 
 ## Herramienta y rol
 
-**Herramienta:** Claude Code (modelo Claude Opus), sobre el repositorio local, en una sola sesión el 31 de octubre.
+**Herramienta:** Claude Code (modelo Claude Opus), sobre el repositorio local. Según mi declaración, es la única herramienta de IA que usé. La usé en una sesión principal, del 31 de octubre a las 10:28 hasta el 1 de noviembre, y en una consulta aparte la noche del 31 de octubre. El detalle de cada registro está en [`README.md`](README.md).
 
 ### 1. Desarrollo inicial (29 al 31 de octubre, antes de la sesión)
 
@@ -24,6 +24,22 @@ Incorporé Claude Code para revisar la implementación contra el enunciado. A pa
 - **Documentación y presentación:** reescribió el README, escribió los documentos de esta carpeta y actualizó mi presentación v3 hasta la v5.
 - **Ejecución:** corrió las demostraciones de prueba y los commits.
 
+### 2b. Sesiones posteriores (31 de octubre por la tarde y noche, y 1 de noviembre)
+
+En la misma sesión principal, y por instrucción mía, Claude Code:
+- simuló un comité evaluador y auditó la entrega; agregó colores al orquestador (`0301906`), redactó la atribución del uso de IA (`06d6948`) y excluyó del repositorio el video de respaldo (`e9c2b22`);
+- preparó material de ensayo personal, que no forma parte de la entrega: guion alineado con la presentación y audios a partir de mi currículum y del aviso de empleo (ese tramo está redactado en el registro);
+- en la rama `mejoras-xmin` implementó y probó, a partir de una propuesta que llevé, un diagnóstico del XID con `pg_waldump`, incluida una prueba negativa. **Decidí no incorporarlo**: se revirtió y, con mi autorización, se eliminaron sus archivos de evidencia;
+- en la rama `medicion-rto` midió la escalabilidad del RTO con 100.000 y 1.000.000 de registros. **Decidí no incluirla** en la entrega y mencionarla solo de palabra;
+- corrigió la explicación del RPO en el README y en las notas de la lámina 14 (`e5ef386`), y la publicó junto con la etiqueta `entrega-final`, con mi autorización.
+
+El 1 de noviembre, en la misma sesión:
+- implementó y ejecutó por etapas, en un proyecto Docker aislado, la medición del retraso del archivado (escenarios A–E, rama `medicion-archivado`). Yo aprobé cada etapa después de revisar sus resultados, y pedí corregir cómo se medía el vaciado de la cola en D antes de ejecutar E;
+- rediseñó la lámina 5 e incorporó en la lámina 14 el resultado de la prueba E. Las revisé en PowerPoint y las aprobé;
+- preparó la publicación de la presentación, de la evidencia de la prueba E (`results/complementaria_e/`) y de estos registros.
+
+La noche del 31 de octubre hice además una consulta aparte desde otra carpeta: cómo abordar el caso, una evaluación del proyecto, cómo pedir cambios de alto impacto y bajo riesgo, y si aumentar la cantidad de registros mejoraría la prueba.
+
 Sobre la atribución que muestra GitHub: los commits de la sesión los ejecutó Claude Code en mi equipo, por eso el autor aparece con mi identidad de Git, y Claude Code agrega automáticamente la línea `Co-Authored-By: Claude`. Algunos de esos commits y sus publicaciones los hizo sin que yo pidiera publicar en ese mensaje, aunque el contenido de cada cambio respondía a mis instrucciones.
 
 ### 3. Mis decisiones, pruebas y verificaciones
@@ -31,8 +47,9 @@ Sobre la atribución que muestra GitHub: los commits de la sesión los ejecutó 
 - **Decidí** qué cambios aplicar y cuáles descartar (los ejemplos están más abajo). Algunas propuestas técnicas, como recuperar por XID, vinieron de Claude Code y las aprobé.
 - **Cuestioné y revisé** los resultados: por qué la postulación 50, si la lámina 11 era correcta, si el guion debía publicarse, qué archivos sobraban.
 - **Ejecuté por mi cuenta** al menos cuatro ensayos completos de la demostración y las verificaciones previas a la presentación.
+- **Fijé las condiciones de las pruebas adicionales:** ramas separadas, sin tocar la demo ni la entrega, autorización explícita para cada escenario, commit o publicación, y descarte de lo que no aportaba (el diagnóstico del XID).
 
-El registro completo de la sesión está en esta carpeta. Los ensayos que ejecuté en mi propia terminal no aparecen en el registro; su evidencia quedó en los resultados archivados.
+Los registros de las sesiones están en esta carpeta. Los ensayos que ejecuté en mi propia terminal no aparecen en el registro; su evidencia quedó en los resultados archivados.
 
 ## Mis reglas de uso
 
@@ -91,4 +108,4 @@ La idea de un monitor visual llegó de otra fuente. Antes de implementarlo, lo e
 
 ## Qué contienen los registros
 
-Los archivos `.jsonl` de esta carpeta son copias sin editar de la sesión de Claude Code del 31-oct: cada mensaje, cada comando ejecutado y su resultado, hasta el momento de su última copia.
+Los archivos `.jsonl` de esta carpeta son copias de las sesiones de Claude Code: cada mensaje, cada comando ejecutado y su resultado, hasta el momento de su última copia. Las únicas ediciones son las redacciones de datos personales. El detalle, el corte y las sumas SHA-256 están en [`README.md`](README.md).

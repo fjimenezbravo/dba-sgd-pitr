@@ -1,0 +1,96 @@
+=== MEDICION DEL RETRASO DE ARCHIVADO WAL: escenarios E ===
+Sun Nov  1 08:35:56 -03 2026
+Proyecto aislado: dba-sgd-archivo (compose.archivo.yaml, stanza archivo). La demo no se toca.
+Commit: e5ef386 (medicion-archivado) | limite de disco: 10 GB
+Disco libre al inicio: 111.0 GB
+
+[1] Base de origen aislada
+archive_command = pgbackrest --stanza=archivo archive-push %p (contenedor 962f14d6bd34, proyecto dba-sgd-archivo)
+PostgreSQL 17.11 (Debian 17.11-1.pgdg12+2) | archive_mode=on | archive_timeout=1min | synchronous_commit=on | wal_segment_size=16MB
+Tabla de carga creada (relleno sin compresion, para generar WAL proporcional).
+Muestreador en marcha (cada 0,5 s, dentro del contenedor).
+
+[E] Falla simulada: respaldo FULL, carga sostenida 30 s y detencion en seco de la base de origen
+Inventario de dba-sgd-archivo (E):
+  contenedor dba-sgd-archivo-origen-1
+  volumen dba-sgd-archivo_ar_origen
+  volumen dba-sgd-archivo_ar_repo
+  montaje declarado: ar_restaurada -> /var/lib/postgresql/data
+  montaje declarado: ar_repo -> /var/lib/pgbackrest (solo lectura)
+  montaje declarado: /Users/franciscojavierjimenezbravo/dba-sgd-pitr/config/pgbackrest-archivo.conf -> /etc/pgbackrest/pgbackrest.conf (solo lectura)
+ Container dba-sgd-archivo-cliente-run-824aedc617c0 Creating 
+ Container dba-sgd-archivo-cliente-run-824aedc617c0 Created 
+server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+connection to server was lost
+
+Desfase reloj servidor - Mac: +0.018 s (+/- 0.054 s)
+scripts/medir_archivado.sh: line 197: printf: write error: Broken pipe
+Base de origen detenida en seco a las 08:36:33.
+Registro externo (tras la detencion): results/medicion_archivado_20261101_083556_confirmaciones.csv 2740 filas, results/medicion_archivado_20261101_083556_intentos.csv 5480 filas, sha256 686da06f5d0a6aba
+Restaurando solo desde el repositorio en una instancia aparte (sin el volumen de origen)
+2026-11-01 11:36:34.553 P00   INFO: restore command begin 2.60.0: 
+2026-11-01 11:36:35.297 P00   INFO: restore command end: completed successfully (747ms)
+  montaje en ejecucion: bind /host_mnt/Users/franciscojavierjimenezbravo/dba-sgd-pitr/config/pgbackrest-archivo.conf -> /etc/pgbackrest/pgbackrest.conf rw=false
+  montaje en ejecucion: volume dba-sgd-archivo_ar_repo/var/lib/docker/volumes/dba-sgd-archivo_ar_repo/_data -> /var/lib/pgbackrest rw=false
+  montaje en ejecucion: volume dba-sgd-archivo_ar_restaurada/var/lib/docker/volumes/dba-sgd-archivo_ar_restaurada/_data -> /var/lib/postgresql/data rw=true
+Tiempo de restauracion: copia pgbackrest restore 1.2 s + recuperacion WAL y promocion 1.0 s (sondeo 0,5 s) = 2.2 s; desde la detencion 3.0 s (incluye la espera del cliente)
+Repositorio: ultimo WAL archivado segun pgbackrest info: 000000010000000000000010
+Log de la instancia restaurada:
+  redo done at 0/10FFFEC8 system usage: CPU: user: 0.08 s, system: 0.08 s, elapsed: 0.41 s
+  last completed transaction was at log time 2026-11-01 11:36:31.999326+00
+  selected new timeline ID: 2
+  segmentos restaurados desde el repositorio (archive-get): 15
+  ultimo:  restored log file "000000010000000000000010" from archive
+Ids de E recuperados: 2611
+
+[Cierre] pgbackrest verify: comprueba la integridad del repositorio (checksums de respaldos y WAL).
+         NO equivale a una restauracion funcional; la restauracion funcional es la de E.
+  2026-11-01 11:36:37.811 P00   INFO: verify command begin 2.60.0: 
+  2026-11-01 11:36:38.177 P00   INFO: verify command end: completed successfully (368ms)
+[Cierre] pg_amcheck sobre la base restaurada (tablas e indices, incluida la coherencia indice-tabla)
+  pg_amcheck: codigo de salida 0 (sin corrupcion detectada)
+  Filas y unicidad en la base restaurada: 2611 filas, 2611 ids distintos
+
+[Analisis]
+Muestras: 64 | segmentos cerrados observados: 16 | archive-push registrados: 16 | confirmaciones: 2740
+
+Esc    Dur      Tx    Tx/s WAL MB/s |  Segs Lat p50 Lat p95 Lat max | Pend p95 Pend max | Ant p50 Ant p95 Ant max | Ready Fallas
+         s                          |             s       s       s |       MB       MB |       s       s       s |   max  delta
+E       30    2740    90.4     6.13 |    11    0.08    0.08    0.08 |     21.4     30.1 |     1.3     2.7     2.7 |     1      0
+
+Lat = cierre del segmento (.ready) -> fin de archive-push. Pend = WAL escrito a disco aun no archivado.
+Ant = antiguedad de la transaccion confirmada mas antigua que aun no es recuperable desde el repositorio
+      (segun el registro externo de confirmaciones; 0 = todas las confirmadas ya estaban archivadas).
+
+Falla simulada (E): perdida OBSERVADA en esta ejecucion (no es un RPO garantizado)
+  Intentadas (id insertado, P): 2740
+  Confirmadas (COMMIT acusado al cliente, C): 2740
+    recuperadas: 2611 | perdidas: 129
+  Indeterminadas (COMMIT enviado sin acuse antes de la detencion): 0
+    aparecen en la base restaurada: 0 | no aparecen: 0
+  Ultima transaccion confirmada recuperable: id 2611, confirmada 1.41 s antes de la detencion
+  Contiguidad: todas las perdidas son posteriores a todas las recuperadas: True
+  Ventana de perdida observada: confirmadas entre 1.39 s y 0.09 s antes de la detencion (1.30 s)
+  Hora de la detencion: reloj del Mac corregido por el desfase medido con el servidor (ver evidencia).
+
+Limitaciones:
+  - Muestreo cada 0,5 s: picos mas cortos pueden no observarse. Hora de cierre: mtime del archivo .ready (ns).
+  - La antiguedad usa el LSN pedido despues de cada COMMIT (cota conservadora: >= fin del registro de COMMIT).
+  - Repositorio local en el mismo equipo: sin latencia de red; una boveda remota sera mas lenta.
+  - Una sola ejecucion de pocos minutos en Docker Desktop; no es un RPO garantizado.
+  - E detiene el contenedor con docker kill: no reproduce una falla fisica del disco.
+
+[Limpieza] Solo recursos de dba-sgd-archivo (la evidencia queda en results/)
+Recursos del proyecto dba-sgd-archivo que se eliminaran:
+contenedor dba-sgd-archivo-restaurada-1
+contenedor dba-sgd-archivo-origen-1
+  volumen dba-sgd-archivo_ar_origen
+  volumen dba-sgd-archivo_ar_repo
+  volumen dba-sgd-archivo_ar_restaurada
+Recursos restantes de dba-sgd-archivo: 0 contenedores, 0 volumenes
+Registro externo (tras eliminar los volumenes): results/medicion_archivado_20261101_083556_confirmaciones.csv 2740 filas, results/medicion_archivado_20261101_083556_intentos.csv 5480 filas, sha256 686da06f5d0a6aba
+Disco libre al final: 110.1 GB
+Sun Nov  1 08:36:39 -03 2026
+Archivos: results/medicion_archivado_20261101_083556*.{txt,csv,log}

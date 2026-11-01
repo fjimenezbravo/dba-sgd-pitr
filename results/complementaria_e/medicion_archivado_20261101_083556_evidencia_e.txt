@@ -1,0 +1,30 @@
+[E] Falla simulada: respaldo FULL, carga sostenida 30 s y detencion en seco de la base de origen
+Inventario de dba-sgd-archivo (E):
+  contenedor dba-sgd-archivo-origen-1
+  volumen dba-sgd-archivo_ar_origen
+  volumen dba-sgd-archivo_ar_repo
+  montaje declarado: ar_restaurada -> /var/lib/postgresql/data
+  montaje declarado: ar_repo -> /var/lib/pgbackrest (solo lectura)
+  montaje declarado: /Users/franciscojavierjimenezbravo/dba-sgd-pitr/config/pgbackrest-archivo.conf -> /etc/pgbackrest/pgbackrest.conf (solo lectura)
+Desfase reloj servidor - Mac: +0.018 s (+/- 0.054 s)
+Base de origen detenida en seco a las 08:36:33.
+Registro externo (tras la detencion): results/medicion_archivado_20261101_083556_confirmaciones.csv 2740 filas, results/medicion_archivado_20261101_083556_intentos.csv 5480 filas, sha256 686da06f5d0a6aba
+Restaurando solo desde el repositorio en una instancia aparte (sin el volumen de origen)
+  montaje en ejecucion: bind /host_mnt/Users/franciscojavierjimenezbravo/dba-sgd-pitr/config/pgbackrest-archivo.conf -> /etc/pgbackrest/pgbackrest.conf rw=false
+  montaje en ejecucion: volume dba-sgd-archivo_ar_repo/var/lib/docker/volumes/dba-sgd-archivo_ar_repo/_data -> /var/lib/pgbackrest rw=false
+  montaje en ejecucion: volume dba-sgd-archivo_ar_restaurada/var/lib/docker/volumes/dba-sgd-archivo_ar_restaurada/_data -> /var/lib/postgresql/data rw=true
+Tiempo de restauracion: copia pgbackrest restore 1.2 s + recuperacion WAL y promocion 1.0 s (sondeo 0,5 s) = 2.2 s; desde la detencion 3.0 s (incluye la espera del cliente)
+Repositorio: ultimo WAL archivado segun pgbackrest info: 000000010000000000000010
+Log de la instancia restaurada:
+  redo done at 0/10FFFEC8 system usage: CPU: user: 0.08 s, system: 0.08 s, elapsed: 0.41 s
+  last completed transaction was at log time 2026-11-01 11:36:31.999326+00
+  selected new timeline ID: 2
+  segmentos restaurados desde el repositorio (archive-get): 15
+  ultimo:  restored log file "000000010000000000000010" from archive
+Ids de E recuperados: 2611
+  2026-11-01 11:36:37.811 P00   INFO: verify command begin 2.60.0: 
+  2026-11-01 11:36:38.177 P00   INFO: verify command end: completed successfully (368ms)
+[Cierre] pg_amcheck sobre la base restaurada (tablas e indices, incluida la coherencia indice-tabla)
+  pg_amcheck: codigo de salida 0 (sin corrupcion detectada)
+  Filas y unicidad en la base restaurada: 2611 filas, 2611 ids distintos
+Registro externo (tras eliminar los volumenes): results/medicion_archivado_20261101_083556_confirmaciones.csv 2740 filas, results/medicion_archivado_20261101_083556_intentos.csv 5480 filas, sha256 686da06f5d0a6aba

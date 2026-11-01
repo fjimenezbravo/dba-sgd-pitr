@@ -1,0 +1,8 @@
+ Container dba-sgd-archivo-restaurada-run-bd987c107e57 Creating 
+ Container dba-sgd-archivo-restaurada-run-bd987c107e57 Created 
+2026-11-01 11:36:34.553 P00   INFO: restore command begin 2.60.0: --exec-id=1-234b8f5d --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo --type=default
+2026-11-01 11:36:34.557 P00   INFO: repo1: restore backup set 20261101-113601F, recovery will start at 2026-11-01 11:36:01
+2026-11-01 11:36:35.284 P00   INFO: write updated /var/lib/postgresql/data/postgresql.auto.conf
+2026-11-01 11:36:35.296 P00   INFO: restore global/pg_control (performed last to ensure aborted restores cannot be started)
+2026-11-01 11:36:35.296 P00   INFO: restore size = 29.3MB, file total = 1269
+2026-11-01 11:36:35.297 P00   INFO: restore command end: completed successfully (747ms)

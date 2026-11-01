@@ -101,7 +101,7 @@ Se pierde el WAL que **no alcanzó a archivarse** en la bóveda. El RPO depende 
 
 Por eso `archive_timeout=60s` **no garantiza** un RPO máximo de 60 s. Con el archivado al día, la pérdida esperable es del orden de un minuto más la demora del archivado; hay que vigilar ese retraso (`pg_stat_archiver`; el monitor de la demo muestra si el archivado está al día).
 
-**Este laboratorio no mide un RPO garantizado ante pérdida del disco:** esa falla no se simuló, y la bóveda está en el mismo equipo (ver pregunta 4), así que perder el equipo implicaría perder también los respaldos.
+**La demo oficial no simula la pérdida del origen:** recupera de un error lógico. Por separado, la **prueba complementaria E** ([`results/complementaria_e/`](results/complementaria_e/README.md)) detuvo en seco la base de origen durante una carga de unas 90 transacciones por segundo y restauró solo desde el repositorio. De 2.740 transacciones confirmadas se recuperaron 2.611 y se perdieron 129: las confirmadas en los ~1,4 s anteriores a la detención, cuyo WAL aún no estaba archivado. Es una medición puntual (una sola ejecución, `docker kill` y no una falla física del disco), así que **no es un RPO garantizado**. Además, el repositorio está en el mismo equipo (ver pregunta 4): perder el equipo implicaría perder también los respaldos.
 
 Para reducir el RPO se puede usar replicación en streaming o `pg_receivewal` hacia otro servidor, que reciben el WAL casi en tiempo real. Pero `pg_receivewal` no garantiza un RPO cero: para ese objetivo se requiere una arquitectura y una política de confirmación adecuadas, por ejemplo replicación síncrona correctamente configurada.
 
@@ -153,7 +153,7 @@ Un respaldo que no se ha restaurado no está probado. Propongo:
 
 ## 8. Uso de IA y material de presentación
 
-- **IA:** desarrollé la versión inicial del laboratorio; el 31 de octubre incorporé Claude Code, que por instrucción mía modificó y amplió el código, la documentación y la presentación. El detalle de qué hizo cada uno, mis decisiones y mis verificaciones está en [`ai-logs/uso_de_ia.md`](ai-logs/uso_de_ia.md), y el registro de la sesión en `ai-logs/`.
+- **IA:** desarrollé la versión inicial del laboratorio; desde el 31 de octubre usé Claude Code, que por instrucción mía modificó y amplió el código, la documentación y la presentación, y el 1 de noviembre ejecutó las mediciones complementarias. El detalle de qué hizo cada uno, mis decisiones y mis verificaciones está en [`ai-logs/uso_de_ia.md`](ai-logs/uso_de_ia.md), y los registros de las sesiones en `ai-logs/`.
 - **Presentación:** [`presentation/Volver_al_minuto_anterior_v5.pptx`](presentation/Volver_al_minuto_anterior_v5.pptx) (18 láminas, con notas del orador).
 
 ## 9. Estructura del repositorio
@@ -164,9 +164,9 @@ Un respaldo que no se ha restaurado no está probado. Propongo:
 | `scripts/` | Etapas `02`–`08`, `simular_incidente.sql` y `monitor.sh`. |
 | `sql/` | Esquema y 100 postulaciones ficticias (se cargan al iniciar el contenedor). |
 | `config/`, `Dockerfile`, `compose.demo.yaml` | PostgreSQL 17 + pgBackRest y su configuración. |
-| `results/` | Corrida de referencia (31-oct, 11:35) y `pruebas_objetivo/` (recuperación por hora y por restore point). |
+| `results/` | Corrida de referencia (31-oct, 11:35), `pruebas_objetivo/` (recuperación por hora y por restore point) y `complementaria_e/` (pérdida simulada del origen; no es parte de la demo). |
 | `presentation/` | Presentación con notas del orador. |
-| `ai-logs/` | Registro completo de la conversación con IA y resumen de su uso. |
+| `ai-logs/` | Registros de las sesiones con Claude Code y resumen del uso de IA. |
 | `legacy/` | No se publica (ignorado por git): versiones anteriores y corridas de ensayo, comprimidas. |
 
 ## 10. Estado del clúster después del PITR

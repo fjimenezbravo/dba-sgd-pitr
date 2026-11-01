@@ -1,0 +1,887 @@
+=================== sql/01_schema.sql
+     1	-- Proyecto: Recuperacion PITR con PostgreSQL 17 y pgBackRest
+     2	-- Proposito: Definir la tabla de postulaciones para la prueba tecnica.
+     3	
+     4	CREATE TABLE IF NOT EXISTS postulaciones (
+     5	    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+     6	    nombre_postulante VARCHAR(100) NOT NULL,
+     7	    cargo VARCHAR(150) NOT NULL,
+     8	    region VARCHAR(50) NOT NULL,
+     9	    estado VARCHAR(30) NOT NULL DEFAULT 'en_revision',
+    10	    creado_en TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
+    11	    observacion TEXT
+    12	);
+    13	
+    14	COMMENT ON TABLE postulaciones IS
+    15	    'Tabla ficticia para demostrar respaldo, incidente y recuperacion PITR';
+=================== sql/02_datos_iniciales.sql
+     1	-- Proyecto: Recuperacion PITR con PostgreSQL 17 y pgBackRest
+     2	-- Proposito: Crear datos ficticios reproducibles para la prueba.
+     3	-- No se utilizan datos personales reales.
+     4	
+     5	INSERT INTO postulaciones (
+     6	    nombre_postulante,
+     7	    cargo,
+     8	    region,
+     9	    estado,
+    10	    creado_en,
+    11	    observacion
+    12	)
+    13	SELECT
+    14	    (ARRAY[
+    15	        'Ana Perez', 'Luis Gonzalez', 'Maria Soto', 'Pedro Rojas',
+    16	        'Carolina Diaz', 'Diego Munoz', 'Camila Silva', 'Felipe Torres',
+    17	        'Andrea Morales', 'Javier Contreras'
+    18	    ])[((n - 1) % 10) + 1],
+    19	    (ARRAY[
+    20	        'Administrador de Bases de Datos',
+    21	        'Administrador de Sistemas',
+    22	        'Analista de Datos',
+    23	        'Ingeniero de Infraestructura'
+    24	    ])[((n - 1) % 4) + 1],
+    25	    (ARRAY[
+    26	        'Metropolitana', 'Valparaiso', 'Biobio', 'Araucania',
+    27	        'Los Lagos'
+    28	    ])[((n - 1) % 5) + 1],
+    29	    (ARRAY[
+    30	        'en_revision', 'preseleccionada', 'pendiente'
+    31	    ])[((n - 1) % 3) + 1],
+    32	    TIMESTAMPTZ '2026-10-20 09:00:00+00'
+    33	        + ((n - 1) * INTERVAL '10 minutes'),
+    34	    'Registro ficticio de prueba ' || n
+    35	FROM generate_series(1, 100) AS serie(n);
+=================== scripts/02_backup.sh
+     1	#!/usr/bin/env bash
+     2	set -Eeuo pipefail
+     3	
+     4	ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+     5	cd "$ROOT_DIR"
+     6	
+     7	if [[ -f .env ]]; then
+     8	  COMPOSE_PROJECT_NAME="$(sed -n 's/^COMPOSE_PROJECT_NAME=//p' .env | tail -n 1)"
+     9	fi
+    10	
+    11	COMPOSE_PROJECT_NAME="$COMPOSE_PROJECT_NAME"
+    12	[[ "$COMPOSE_PROJECT_NAME" =~ ^[a-z0-9][a-z0-9_-]*$ ]] || {
+    13	  echo "ERROR: COMPOSE_PROJECT_NAME contiene caracteres no permitidos."
+    14	  exit 1
+    15	}
+    16	
+    17	
+    18	COMPOSE=(docker compose -p "$COMPOSE_PROJECT_NAME" -f compose.demo.yaml)
+    19	mkdir -p results
+    20	LOG="results/backup_$(date '+%Y%m%d_%H%M%S').txt"
+    21	
+    22	{
+    23	  echo "=== BACKUP COMPLETO PostgreSQL / pgBackRest ==="
+    24	  date
+    25	  echo
+    26	
+    27	  echo "[1] Verificando PostgreSQL"
+    28	  "${COMPOSE[@]}" exec -T postgres pg_isready -U postgres -d postulaciones_db
+    29	  echo
+    30	
+    31	  echo "[2] Verificando registros iniciales"
+    32	  "${COMPOSE[@]}" exec -T postgres psql -U postgres -d postulaciones_db \
+    33	    -c "SELECT COUNT(*) AS total FROM postulaciones;"
+    34	
+    35	  TOTAL="$("${COMPOSE[@]}" exec -T postgres psql -U postgres -d postulaciones_db -Atc "SELECT COUNT(*) FROM postulaciones;")"
+    36	
+    37	  if [[ "$TOTAL" != "100" ]]; then
+    38	    echo "ERROR: se esperaban 100 registros y se encontraron $TOTAL"
+    39	    exit 1
+    40	  fi
+    41	  echo
+    42	
+    43	  echo "[3] Verificando stanza pgBackRest"
+    44	  if "${COMPOSE[@]}" exec -T -u postgres postgres \
+    45	      test -f /var/lib/pgbackrest/backup/main/backup.info; then
+    46	    echo "Stanza main existente. Se continúa."
+    47	  else
+    48	    echo "Stanza main no encontrada. Inicializando automáticamente..."
+    49	    "${COMPOSE[@]}" exec -T -u postgres postgres \
+    50	      pgbackrest --stanza=main stanza-create
+    51	  fi
+    52	  echo
+    53	
+    54	  echo "[4] Creando backup FULL"
+    55	  "${COMPOSE[@]}" exec -T -u postgres postgres \
+    56	    pgbackrest --stanza=main backup --type=full
+    57	  echo
+    58	
+    59	  echo "[5] Verificando backup"
+    60	  "${COMPOSE[@]}" exec -T -u postgres postgres \
+    61	    pgbackrest --stanza=main info
+    62	  echo
+    63	
+    64	  echo "BACKUP COMPLETADO CORRECTAMENTE"
+    65	  date
+    66	} 2>&1 | tee "$LOG"
+    67	
+    68	echo "Evidencia guardada en: $LOG"
+=================== scripts/03_punto_recuperacion.sh
+     1	#!/usr/bin/env bash
+     2	set -Eeuo pipefail
+     3	
+     4	ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+     5	cd "$ROOT_DIR"
+     6	
+     7	if [[ -f .env ]]; then
+     8	  COMPOSE_PROJECT_NAME="$(sed -n 's/^COMPOSE_PROJECT_NAME=//p' .env | tail -n 1)"
+     9	fi
+    10	
+    11	COMPOSE_PROJECT_NAME="$COMPOSE_PROJECT_NAME"
+    12	[[ "$COMPOSE_PROJECT_NAME" =~ ^[a-z0-9][a-z0-9_-]*$ ]] || {
+    13	  echo "ERROR: COMPOSE_PROJECT_NAME contiene caracteres no permitidos."
+    14	  exit 1
+    15	}
+    16	
+    17	
+    18	COMPOSE=(docker compose -p "$COMPOSE_PROJECT_NAME" -f compose.demo.yaml)
+    19	mkdir -p results
+    20	
+    21	PUNTO="pitr_objetivo_$(date '+%Y%m%d_%H%M%S')"
+    22	LOG="results/punto_recuperacion_$(date '+%Y%m%d_%H%M%S').txt"
+    23	
+    24	{
+    25	  echo "=== CREACION DEL PUNTO DE RECUPERACION PITR ==="
+    26	  date
+    27	  echo
+    28	  echo "[1] Hora del servidor PostgreSQL"
+    29	  "${COMPOSE[@]}" exec -T postgres psql -U postgres -d postulaciones_db \
+    30	    -c "SELECT clock_timestamp() AS hora_servidor;"
+    31	  echo
+    32	  echo "[2] Creando restore point: $PUNTO"
+    33	  LSN="$("${COMPOSE[@]}" exec -T postgres psql -U postgres -d postulaciones_db -Atc \
+    34	    "SELECT pg_create_restore_point('$PUNTO');")"
+    35	  echo "Restore point: $PUNTO"
+    36	  echo "LSN: $LSN"
+    37	  printf 'PUNTO=%s\nLSN=%s\n' "$PUNTO" "$LSN" > results/restore_point.env
+    38	  echo
+    39	  echo "PUNTO DE RECUPERACION CREADO CORRECTAMENTE"
+    40	  date
+    41	} 2>&1 | tee "$LOG"
+    42	
+    43	echo "Datos guardados en results/restore_point.env"
+    44	echo "Evidencia guardada en: $LOG"
+=================== scripts/04_incidente.sh
+     1	#!/usr/bin/env bash
+     2	set -Eeuo pipefail
+     3	
+     4	ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+     5	cd "$ROOT_DIR"
+     6	
+     7	if [[ -f .env ]]; then
+     8	  COMPOSE_PROJECT_NAME="$(sed -n 's/^COMPOSE_PROJECT_NAME=//p' .env | tail -n 1)"
+     9	fi
+    10	
+    11	COMPOSE_PROJECT_NAME="$COMPOSE_PROJECT_NAME"
+    12	[[ "$COMPOSE_PROJECT_NAME" =~ ^[a-z0-9][a-z0-9_-]*$ ]] || {
+    13	  echo "ERROR: COMPOSE_PROJECT_NAME contiene caracteres no permitidos."
+    14	  exit 1
+    15	}
+    16	
+    17	
+    18	COMPOSE=(docker compose -p "$COMPOSE_PROJECT_NAME" -f compose.demo.yaml)
+    19	SQL="scripts/simular_incidente.sql"
+    20	
+    21	mkdir -p results
+    22	
+    23	[[ -f results/restore_point.env ]] || {
+    24	  echo "ERROR: no existe el punto de recuperación."
+    25	  exit 1
+    26	}
+    27	
+    28	[[ -f "$SQL" ]] || {
+    29	  echo "ERROR: no existe $SQL"
+    30	  exit 1
+    31	}
+    32	
+    33	echo "[1] Validando estado previo del laboratorio"
+    34	
+    35	ESTADO="$("${COMPOSE[@]}" exec -T postgres psql \
+    36	  -v ON_ERROR_STOP=1 -U postgres -d postulaciones_db -Atc "
+    37	    SELECT
+    38	      COUNT(*),
+    39	      COUNT(*) FILTER (
+    40	        WHERE estado = 'rechazada'
+    41	          AND observacion = 'INCIDENTE: UPDATE accidental sin WHERE'
+    42	      ),
+    43	      COUNT(*) FILTER (
+    44	        WHERE observacion = 'POST_INCIDENTE_RECUPERABLE'
+    45	      )
+    46	    FROM postulaciones;
+    47	  ")"
+    48	
+    49	IFS='|' read -r TOTAL AFECTADOS POSTERIORES <<< "$ESTADO"
+    50	
+    51	if [[ "$TOTAL" != "100" || "$AFECTADOS" != "0" || "$POSTERIORES" != "0" ]]; then
+    52	  echo "ERROR: estado no válido para ejecutar el incidente."
+    53	  echo "Total: $TOTAL | Afectados: $AFECTADOS | Posteriores: $POSTERIORES"
+    54	  echo "Se cancela para proteger los datos."
+    55	  exit 1
+    56	fi
+    57	
+    58	LOG="results/incidente_$(date '+%Y%m%d_%H%M%S').txt"
+    59	
+    60	{
+    61	  echo "=== SIMULACION DEL INCIDENTE ==="
+    62	  date
+    63	  echo
+    64	  echo "[2] Estado previo"
+    65	  "${COMPOSE[@]}" exec -T postgres psql -U postgres -d postulaciones_db \
+    66	    -c "SELECT estado, COUNT(*) FROM postulaciones GROUP BY estado ORDER BY estado;"
+    67	  echo
+    68	  echo "[3] Ejecutando UPDATE accidental"
+    69	  "${COMPOSE[@]}" exec -T postgres psql -v ON_ERROR_STOP=1 \
+    70	    -U postgres -d postulaciones_db < "$SQL"
+    71	  echo
+    72	  echo "[4] Verificando impacto"
+    73	  "${COMPOSE[@]}" exec -T postgres psql -U postgres -d postulaciones_db \
+    74	    -c "SELECT estado, COUNT(*) FROM postulaciones GROUP BY estado ORDER BY estado;"
+    75	  echo
+    76	  echo "INCIDENTE SIMULADO"
+    77	  date
+    78	} 2>&1 | tee "$LOG"
+    79	
+    80	echo "Evidencia guardada en: $LOG"
+=================== scripts/05_registros_posteriores.sh
+     1	#!/usr/bin/env bash
+     2	set -Eeuo pipefail
+     3	
+     4	ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+     5	cd "$ROOT_DIR"
+     6	
+     7	if [[ -f .env ]]; then
+     8	  COMPOSE_PROJECT_NAME="$(sed -n 's/^COMPOSE_PROJECT_NAME=//p' .env | tail -n 1)"
+     9	fi
+    10	
+    11	COMPOSE_PROJECT_NAME="$COMPOSE_PROJECT_NAME"
+    12	[[ "$COMPOSE_PROJECT_NAME" =~ ^[a-z0-9][a-z0-9_-]*$ ]] || {
+    13	  echo "ERROR: COMPOSE_PROJECT_NAME contiene caracteres no permitidos."
+    14	  exit 1
+    15	}
+    16	
+    17	
+    18	COMPOSE=(docker compose -p "$COMPOSE_PROJECT_NAME" -f compose.demo.yaml)
+    19	mkdir -p results
+    20	
+    21	RUN_ID="$(date '+%Y%m%d_%H%M%S')"
+    22	LOG="results/post_incidente_${RUN_ID}.txt"
+    23	CSV="results/post_incidente_${RUN_ID}.csv"
+    24	CSV_PATH_FILE="results/post_incidente_csv.path"
+    25	
+    26	{
+    27	  echo "=== REGISTROS LEGITIMOS POSTERIORES AL INCIDENTE ==="
+    28	  date
+    29	  echo
+    30	
+    31	  echo "[1] Validando estado del incidente y registros previos"
+    32	
+    33	  ESTADO="$("${COMPOSE[@]}" exec -T postgres psql \
+    34	    -v ON_ERROR_STOP=1 -U postgres -d postulaciones_db -Atc "
+    35	      SELECT
+    36	        COUNT(*),
+    37	        COUNT(*) FILTER (
+    38	          WHERE estado = 'rechazada'
+    39	            AND observacion = 'INCIDENTE: UPDATE accidental sin WHERE'
+    40	        ),
+    41	        COUNT(*) FILTER (
+    42	          WHERE observacion = 'POST_INCIDENTE_RECUPERABLE'
+    43	        )
+    44	      FROM postulaciones;
+    45	    ")"
+    46	
+    47	  IFS='|' read -r TOTAL AFECTADOS POSTERIORES <<< "$ESTADO"
+    48	
+    49	  if [[ "$TOTAL" != "100" || "$AFECTADOS" != "100" || "$POSTERIORES" != "0" ]]; then
+    50	    echo "ERROR: estado no válido para insertar registros posteriores."
+    51	    echo "Total: $TOTAL | Afectados: $AFECTADOS | Posteriores: $POSTERIORES"
+    52	    exit 1
+    53	  fi
+    54	
+    55	  if [[ -e "$CSV" ]]; then
+    56	    echo "ERROR: ya existe $CSV. Se cancela para proteger la evidencia."
+    57	    exit 1
+    58	  fi
+    59	
+    60	  echo
+    61	  echo "[2] Insertando tres postulaciones legítimas"
+    62	  "${COMPOSE[@]}" exec -T postgres psql -v ON_ERROR_STOP=1 \
+    63	    -U postgres -d postulaciones_db <<'SQL'
+    64	INSERT INTO postulaciones
+    65	    (nombre_postulante, cargo, region, estado, observacion)
+    66	VALUES
+    67	    ('Registro Posterior 1', 'Administrador de Bases de Datos',
+    68	     'Metropolitana', 'en_revision', 'POST_INCIDENTE_RECUPERABLE'),
+    69	    ('Registro Posterior 2', 'Analista de Datos',
+    70	     'Valparaiso', 'preseleccionada', 'POST_INCIDENTE_RECUPERABLE'),
+    71	    ('Registro Posterior 3', 'Ingeniero de Infraestructura',
+    72	     'Biobio', 'pendiente', 'POST_INCIDENTE_RECUPERABLE');
+    73	SQL
+    74	
+    75	  echo
+    76	  echo "[3] Exportando registros posteriores a CSV"
+    77	  "${COMPOSE[@]}" exec -T postgres psql -U postgres -d postulaciones_db \
+    78	    -c "\copy (SELECT nombre_postulante, cargo, region, estado, creado_en, observacion FROM postulaciones WHERE observacion = 'POST_INCIDENTE_RECUPERABLE' ORDER BY nombre_postulante) TO STDOUT WITH CSV HEADER" \
+    79	    > "$CSV"
+    80	
+    81	  FILAS_CSV=$(($(wc -l < "$CSV") - 1))
+    82	  if [[ "$FILAS_CSV" -ne 3 ]]; then
+    83	    echo "ERROR: el CSV debe contener exactamente 3 registros."
+    84	    exit 1
+    85	  fi
+    86	
+    87	  printf '%s\n' "$CSV" > "$CSV_PATH_FILE"
+    88	
+    89	  echo
+    90	  echo "[4] Verificando registros"
+    91	  "${COMPOSE[@]}" exec -T postgres psql -U postgres -d postulaciones_db \
+    92	    -c "SELECT COUNT(*) AS total, COUNT(*) FILTER (WHERE estado = 'rechazada') AS rechazadas, COUNT(*) FILTER (WHERE observacion = 'POST_INCIDENTE_RECUPERABLE') AS posteriores FROM postulaciones;"
+    93	
+    94	  echo
+    95	  echo "[5] Forzando cambio de segmento WAL"
+    96	  "${COMPOSE[@]}" exec -T postgres psql \
+    97	    -v ON_ERROR_STOP=1 -U postgres -d postulaciones_db \
+    98	    -c "SELECT pg_switch_wal();"
+    99	
+   100	  echo "Solicitud de cambio de segmento WAL completada."
+   101	  echo
+   102	  echo "[6] Contenido del CSV"
+   103	  cat "$CSV"
+   104	
+   105	  echo
+   106	  echo "REGISTROS POSTERIORES Y EXPORTACION COMPLETADOS"
+   107	  date
+   108	} 2>&1 | tee "$LOG"
+   109	
+   110	echo "CSV generado: $CSV"
+   111	echo "Referencia guardada en: $CSV_PATH_FILE"
+   112	echo "Evidencia guardada en: $LOG"
+=================== scripts/06_restaurar_pitr.sh
+     1	#!/usr/bin/env bash
+     2	set -Eeuo pipefail
+     3	
+     4	ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+     5	cd "$ROOT_DIR"
+     6	
+     7	if [[ -f .env ]]; then
+     8	  COMPOSE_PROJECT_NAME="$(sed -n 's/^COMPOSE_PROJECT_NAME=//p' .env | tail -n 1)"
+     9	fi
+    10	
+    11	COMPOSE_PROJECT_NAME="$COMPOSE_PROJECT_NAME"
+    12	[[ "$COMPOSE_PROJECT_NAME" =~ ^[a-z0-9][a-z0-9_-]*$ ]] || {
+    13	  echo "ERROR: COMPOSE_PROJECT_NAME contiene caracteres no permitidos."
+    14	  exit 1
+    15	}
+    16	
+    17	
+    18	COMPOSE=(docker compose -p "$COMPOSE_PROJECT_NAME" -f compose.demo.yaml)
+    19	
+    20	RESTORE_ENV="results/restore_point.env"
+    21	
+    22	if [[ ! -s "$RESTORE_ENV" ]]; then
+    23	  echo "ERROR: no existe el archivo del punto de recuperación o está vacío."
+    24	  exit 1
+    25	fi
+    26	
+    27	source "$RESTORE_ENV"
+    28	
+    29	if [[ -z "${PUNTO:-}" || -z "${LSN:-}" ]]; then
+    30	  echo "ERROR: PUNTO o LSN no están definidos en $RESTORE_ENV."
+    31	  exit 1
+    32	fi
+    33	LOG="results/restauracion_pitr_$(date '+%Y%m%d_%H%M%S').txt"
+    34	INICIO=0
+    35	
+    36	{
+    37	  echo "=== RESTAURACION PITR POSTGRESQL 17 ==="
+    38	  date
+    39	  echo "Restore point: $PUNTO"
+    40	  echo "LSN: $LSN"
+    41	  echo
+    42	
+    43	  echo "[1] Comprobando disponibilidad de la base principal"
+    44	  "${COMPOSE[@]}" exec -T postgres \
+    45	    pg_isready -U postgres -d postulaciones_db
+    46	
+    47	  echo "Base principal disponible."
+    48	  echo
+    49	  echo "[2] Comprobando que recovery esté detenido"
+    50	
+    51	  if "${COMPOSE[@]}" ps --status running --services | grep -qx recovery; then
+    52	    echo "ERROR: recovery está ejecutándose. Se cancela para proteger los datos."
+    53	    exit 1
+    54	  fi
+    55	
+    56	  echo "Recovery detenido."
+    57	  echo
+    58	  echo "[3] Comprobando destino de restauracion"
+    59	  "${COMPOSE[@]}" run --rm --no-deps --entrypoint sh recovery -c \
+    60	    'if [ -n "$(ls -A /var/lib/postgresql/data)" ]; then echo "ERROR: el volumen de recuperacion no esta vacio."; exit 1; fi; chown postgres:postgres /var/lib/postgresql/data'
+    61	  echo "Destino vacio y permisos preparados."
+    62	  echo
+    63	
+    64	  echo "[4] Ejecutando restauracion PITR"
+    65	  INICIO="$(date +%s)"
+    66	  "${COMPOSE[@]}" run --rm --no-deps --user postgres \
+    67	    --entrypoint pgbackrest recovery \
+    68	    --stanza=main \
+    69	    --type=name \
+    70	    --target="$PUNTO" \
+    71	    --target-action=promote \
+    72	    restore
+    73	  echo
+    74	
+    75	  echo "[5] Iniciando PostgreSQL restaurado en puerto 5433"
+    76	  "${COMPOSE[@]}" up -d recovery
+    77	
+    78	  echo "[6] Esperando disponibilidad de PostgreSQL"
+    79	  LISTO=0
+    80	  for intento in $(seq 1 60); do
+    81	    if "${COMPOSE[@]}" exec -T recovery pg_isready -U postgres -d postulaciones_db; then
+    82	      LISTO=1
+    83	      break
+    84	    fi
+    85	    sleep 2
+    86	  done
+    87	
+    88	  if [[ "$LISTO" != "1" ]]; then
+    89	    echo "ERROR: PostgreSQL no quedo disponible dentro del tiempo esperado."
+    90	    exit 1
+    91	  fi
+    92	
+    93	  FIN="$(date +%s)"
+    94	  RTO=$((FIN - INICIO))
+    95	
+    96	  echo
+    97	  echo "[7] Verificando datos restaurados"
+    98	  "${COMPOSE[@]}" exec -T recovery psql -U postgres -d postulaciones_db \
+    99	    -c "SELECT COUNT(*) AS total, COUNT(*) FILTER (WHERE estado = 'rechazada') AS rechazadas FROM postulaciones;"
+   100	
+   101	  echo
+   102	  echo "RESTAURACION PITR COMPLETADA"
+   103	  echo "Inicio epoch: $INICIO"
+   104	  echo "Fin epoch: $FIN"
+   105	  echo "RTO hasta disponibilidad: ${RTO} segundos"
+   106	  date
+   107	} 2>&1 | tee "$LOG"
+   108	
+   109	echo "Evidencia guardada en: $LOG"
+=================== scripts/07_reconciliar_post_incidente.sh
+     1	#!/usr/bin/env bash
+     2	set -Eeuo pipefail
+     3	
+     4	ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+     5	cd "$ROOT_DIR"
+     6	
+     7	if [[ -f .env ]]; then
+     8	  COMPOSE_PROJECT_NAME="$(sed -n 's/^COMPOSE_PROJECT_NAME=//p' .env | tail -n 1)"
+     9	fi
+    10	
+    11	COMPOSE_PROJECT_NAME="$COMPOSE_PROJECT_NAME"
+    12	[[ "$COMPOSE_PROJECT_NAME" =~ ^[a-z0-9][a-z0-9_-]*$ ]] || {
+    13	  echo "ERROR: COMPOSE_PROJECT_NAME contiene caracteres no permitidos."
+    14	  exit 1
+    15	}
+    16	
+    17	
+    18	COMPOSE=(docker compose -p "$COMPOSE_PROJECT_NAME" -f compose.demo.yaml)
+    19	CSV_PATH_FILE="results/post_incidente_csv.path"
+    20	LOG="results/reconciliacion_$(date '+%Y%m%d_%H%M%S').txt"
+    21	
+    22	[[ -s "$CSV_PATH_FILE" ]] || {
+    23	  echo "ERROR: no existe la referencia al CSV generado por el script 05."
+    24	  exit 1
+    25	}
+    26	
+    27	CSV="$(cat "$CSV_PATH_FILE")"
+    28	
+    29	[[ -s "$CSV" ]] || {
+    30	  echo "ERROR: CSV inexistente o vacío: $CSV"
+    31	  exit 1
+    32	}
+    33	
+    34	FILAS_CSV=$(($(wc -l < "$CSV") - 1))
+    35	
+    36	if [[ "$FILAS_CSV" -ne 3 ]]; then
+    37	  echo "ERROR: el CSV debe contener exactamente 3 registros."
+    38	  echo "Registros encontrados: $FILAS_CSV"
+    39	  exit 1
+    40	fi
+    41	
+    42	{
+    43	  echo "=== RECONCILIACION DE REGISTROS POSTERIORES ==="
+    44	  date
+    45	  echo
+    46	  echo "CSV utilizado: $CSV"
+    47	
+    48	  EXISTENTES="$("${COMPOSE[@]}" exec -T recovery psql -U postgres -d postulaciones_db -Atc \
+    49	    "SELECT COUNT(*) FROM postulaciones WHERE observacion = 'POST_INCIDENTE_RECUPERABLE';")"
+    50	
+    51	  if [[ "$EXISTENTES" != "0" ]]; then
+    52	    echo "ERROR: ya existen registros posteriores en recovery. Se cancela."
+    53	    exit 1
+    54	  fi
+    55	
+    56	  TOTAL_RECOVERY="$("${COMPOSE[@]}" exec -T recovery psql \
+    57	    -v ON_ERROR_STOP=1 -U postgres -d postulaciones_db -Atc \
+    58	    "SELECT COUNT(*) FROM postulaciones;")"
+    59	
+    60	  if [[ "$TOTAL_RECOVERY" != "100" ]]; then
+    61	    echo "ERROR: recovery debe contener exactamente 100 registros antes de reconciliar."
+    62	    echo "Registros encontrados: $TOTAL_RECOVERY"
+    63	    exit 1
+    64	  fi
+    65	
+    66	  echo "Recovery validado: 100 registros originales."
+    67	
+    68	  echo
+    69	  echo "[1] Importando CSV en recovery (puerto 5433)"
+    70	  "${COMPOSE[@]}" exec -T recovery psql -v ON_ERROR_STOP=1 \
+    71	    -U postgres -d postulaciones_db \
+    72	    -c "\copy postulaciones (nombre_postulante, cargo, region, estado, creado_en, observacion) FROM STDIN WITH CSV HEADER" \
+    73	    < "$CSV"
+    74	
+    75	  echo
+    76	  echo "[2] Validando resultado"
+    77	  "${COMPOSE[@]}" exec -T recovery psql -U postgres -d postulaciones_db \
+    78	    -c "SELECT COUNT(*) AS total, COUNT(*) FILTER (WHERE estado = 'rechazada') AS rechazadas, COUNT(*) FILTER (WHERE observacion = 'POST_INCIDENTE_RECUPERABLE') AS posteriores FROM postulaciones;"
+    79	
+    80	  echo
+    81	  echo "[3] Verificando los tres registros reincorporados"
+    82	  "${COMPOSE[@]}" exec -T recovery psql -U postgres -d postulaciones_db \
+    83	    -c "SELECT nombre_postulante, cargo, region, estado, creado_en FROM postulaciones WHERE observacion = 'POST_INCIDENTE_RECUPERABLE' ORDER BY nombre_postulante;"
+    84	
+    85	  TOTAL="$("${COMPOSE[@]}" exec -T recovery psql -U postgres -d postulaciones_db -Atc "SELECT COUNT(*) FROM postulaciones;")"
+    86	  POSTERIORES="$("${COMPOSE[@]}" exec -T recovery psql -U postgres -d postulaciones_db -Atc "SELECT COUNT(*) FROM postulaciones WHERE observacion = 'POST_INCIDENTE_RECUPERABLE';")"
+    87	  RECHAZADAS="$("${COMPOSE[@]}" exec -T recovery psql -U postgres -d postulaciones_db -Atc "SELECT COUNT(*) FROM postulaciones WHERE estado = 'rechazada';")"
+    88	
+    89	  [[ "$TOTAL" == "103" && "$POSTERIORES" == "3" && "$RECHAZADAS" == "0" ]] || {
+    90	    echo "ERROR: la validación final no coincide con lo esperado."
+    91	    exit 1
+    92	  }
+    93	
+    94	  echo
+    95	  echo "RECONCILIACION COMPLETADA: 103 registros, 3 posteriores y 0 rechazados."
+    96	  date
+    97	} 2>&1 | tee "$LOG"
+    98	
+    99	echo "Evidencia guardada en: $LOG"
+=================== scripts/08_validar_integridad.sh
+     1	#!/usr/bin/env bash
+     2	set -Eeuo pipefail
+     3	
+     4	ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+     5	cd "$ROOT_DIR"
+     6	
+     7	if [[ -f .env ]]; then
+     8	  COMPOSE_PROJECT_NAME="$(sed -n 's/^COMPOSE_PROJECT_NAME=//p' .env | tail -n 1)"
+     9	fi
+    10	
+    11	COMPOSE_PROJECT_NAME="$COMPOSE_PROJECT_NAME"
+    12	[[ "$COMPOSE_PROJECT_NAME" =~ ^[a-z0-9][a-z0-9_-]*$ ]] || {
+    13	  echo "ERROR: COMPOSE_PROJECT_NAME contiene caracteres no permitidos."
+    14	  exit 1
+    15	}
+    16	
+    17	
+    18	COMPOSE=(docker compose -p "$COMPOSE_PROJECT_NAME" -f compose.demo.yaml)
+    19	mkdir -p results
+    20	TMP="$(mktemp -d)"
+    21	trap 'rm -rf "$TMP"' EXIT
+    22	
+    23	LOG="results/integridad_$(date '+%Y%m%d_%H%M%S').txt"
+    24	
+    25	{
+    26	  echo "=== VALIDACION DE INTEGRIDAD DE LOS 100 REGISTROS ORIGINALES ==="
+    27	  date
+    28	
+    29	  echo
+    30	  echo "[1] Exportando registros originales de la base principal (5432)"
+    31	  "${COMPOSE[@]}" exec -T postgres psql -U postgres -d postulaciones_db \
+    32	    -c "\copy (SELECT id, nombre_postulante, cargo, region, creado_en FROM postulaciones WHERE id BETWEEN 1 AND 100 ORDER BY id) TO STDOUT WITH CSV HEADER" \
+    33	    > "$TMP/principal.csv"
+    34	
+    35	  echo
+    36	  echo "[2] Exportando registros originales de la base recuperada (5433)"
+    37	  "${COMPOSE[@]}" exec -T recovery psql -U postgres -d postulaciones_db \
+    38	    -c "\copy (SELECT id, nombre_postulante, cargo, region, creado_en FROM postulaciones WHERE id BETWEEN 1 AND 100 ORDER BY id) TO STDOUT WITH CSV HEADER" \
+    39	    > "$TMP/recovery.csv"
+    40	
+    41	  echo
+    42	  echo "[3] Comprobando cantidad de filas"
+    43	  FILAS_PRINCIPAL=$(wc -l < "$TMP/principal.csv" | tr -d ' ')
+    44	  FILAS_RECOVERY=$(wc -l < "$TMP/recovery.csv" | tr -d ' ')
+    45	  echo "Principal: $((FILAS_PRINCIPAL - 1)) registros"
+    46	  echo "Recovery: $((FILAS_RECOVERY - 1)) registros"
+    47	
+    48	  if [[ "$FILAS_PRINCIPAL" -ne 101 || "$FILAS_RECOVERY" -ne 101 ]]; then
+    49	    echo "ERROR: no se encontraron exactamente 100 registros originales en ambas bases."
+    50	    exit 1
+    51	  fi
+    52	
+    53	  echo
+    54	  echo "[4] Comparando campos originales"
+    55	  if diff -u "$TMP/principal.csv" "$TMP/recovery.csv"; then
+    56	    echo "CORRECTO: los 100 registros originales coinciden exactamente."
+    57	  else
+    58	    echo "ERROR: existen diferencias en los campos originales."
+    59	    exit 1
+    60	  fi
+    61	
+    62	  echo
+    63	  echo "VALIDACION DE INTEGRIDAD COMPLETADA"
+    64	  date
+    65	} 2>&1 | tee "$LOG"
+    66	
+    67	echo "Evidencia guardada en: $LOG"
+=================== scripts/preparar_prueba.sh
+     1	#!/usr/bin/env bash
+     2	set -Eeuo pipefail
+     3	
+     4	ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+     5	cd "$ROOT_DIR"
+     6	
+     7	for archivo in compose.yaml sql/01_schema.sql sql/02_datos_iniciales.sql; do
+     8	  if [[ ! -f "$archivo" ]]; then
+     9	    echo "ERROR: falta el archivo $archivo"
+    10	    exit 1
+    11	  fi
+    12	done
+    13	
+    14	if [[ "${1:-}" != "--reiniciar-datos" ]]; then
+    15	  echo "Uso: $0 --reiniciar-datos"
+    16	  echo "Este script reinicia solo los datos de postulaciones."
+    17	  exit 2
+    18	fi
+    19	read -r -p "Escribe REINICIAR para continuar: " confirmacion
+    20	if [[ "$confirmacion" != "REINICIAR" ]]; then
+    21	  echo "Operacion cancelada."
+    22	  exit 0
+    23	fi
+    24	
+    25	echo "Verificando PostgreSQL..."
+    26	docker compose exec -T postgres pg_isready -U postgres -d postulaciones_db
+    27	
+    28	echo "Creando/verificando esquema..."
+    29	docker compose exec -T postgres psql \
+    30	  -v ON_ERROR_STOP=1 -U postgres -d postulaciones_db \
+    31	  < sql/01_schema.sql
+    32	echo "Reiniciando datos de prueba..."
+    33	docker compose exec -T postgres psql \
+    34	  -v ON_ERROR_STOP=1 -U postgres -d postulaciones_db \
+    35	  -c "TRUNCATE TABLE postulaciones RESTART IDENTITY;"
+    36	
+    37	echo "Cargando datos iniciales..."
+    38	docker compose exec -T postgres psql \
+    39	  -v ON_ERROR_STOP=1 -U postgres -d postulaciones_db \
+    40	  < sql/02_datos_iniciales.sql
+    41	
+    42	mkdir -p results
+    43	ARCHIVO="results/preparacion_$(date '+%Y%m%d_%H%M%S').txt"
+    44	{
+    45	  echo "Preparacion del escenario PITR"
+    46	  date
+    47	  echo
+    48	  docker compose exec -T postgres psql \
+    49	    -U postgres -d postulaciones_db \
+    50	    -c "SELECT COUNT(*) AS total_postulaciones FROM postulaciones;"
+    51	  echo
+    52	  docker compose exec -T postgres psql \
+    53	    -U postgres -d postulaciones_db \
+    54	    -c "SELECT id, nombre_postulante, cargo, region, estado, creado_en FROM postulaciones ORDER BY id LIMIT 10;"
+    55	} | tee "$ARCHIVO"
+    56	
+    57	TOTAL="$(docker compose exec -T postgres psql \
+    58	  -U postgres -d postulaciones_db -Atc \
+    59	  "SELECT COUNT(*) FROM postulaciones;")"
+    60	
+    61	if [[ "$TOTAL" != "100" ]]; then
+    62	  echo "ERROR: se esperaban 100 filas; se encontraron $TOTAL"
+    63	  exit 1
+    64	fi
+    65	
+    66	echo "Preparacion completada: 100 postulaciones."
+    67	echo "Evidencia guardada en: $ARCHIVO"
+=================== scripts/reiniciar_laboratorio.sh
+     1	#!/bin/bash
+     2	set -euo pipefail
+     3	
+     4	PROJECT_DIR="$HOME/dba-sgd-pitr"
+     5	BACKUP_DIR="$HOME/dba-sgd-pitr-respaldo-20261029-193937/docker-volumes"
+     6	
+     7	VOLUMES=(
+     8	  "dba-sgd-pitr_pgdata"
+     9	  "dba-sgd-pitr_pitrdata"
+    10	  "dba-sgd-pitr_pgbackrest_repo"
+    11	  "dba-sgd-pitr_pgbackrest_log"
+    12	)
+    13	
+    14	echo "=========================================="
+    15	echo " REINICIO CONTROLADO DEL LABORATORIO PITR"
+    16	echo "=========================================="
+    17	echo "Proyecto: $PROJECT_DIR"
+    18	echo "Respaldo: $BACKUP_DIR"
+    19	echo
+    20	echo "Se exportarán estos volúmenes:"
+    21	printf ' - %s\n' "${VOLUMES[@]}"
+    22	echo
+    23	echo "ATENCION: se eliminarán los cuatro volúmenes"
+    24	echo "originales después de exportarlos."
+    25	echo
+    26	
+    27	read -r -p "Escribe REINICIAR para continuar: " CONFIRM
+    28	if [[ "$CONFIRM" != "REINICIAR" ]]; then
+    29	  echo "Operación cancelada. No se eliminó nada."
+    30	  exit 0
+    31	fi
+    32	
+    33	cd "$PROJECT_DIR"
+    34	mkdir -p "$BACKUP_DIR"
+    35	
+    36	echo
+    37	echo "[1/5] Deteniendo y eliminando contenedores del proyecto..."
+    38	docker compose down
+    39	
+    40	echo
+    41	echo "[2/5] Exportando volúmenes..."
+    42	for VOLUME in "${VOLUMES[@]}"; do
+    43	  docker volume inspect "$VOLUME" >/dev/null
+    44	
+    45	  echo "Exportando $VOLUME ..."
+    46	  docker run --rm \
+    47	    -v "$VOLUME:/data:ro" \
+    48	    -v "$BACKUP_DIR:/backup" \
+    49	    alpine:3.20 \
+    50	    sh -c "cd /data && tar czf /backup/${VOLUME}.tar.gz ."
+    51	
+    52	  test -s "$BACKUP_DIR/${VOLUME}.tar.gz"
+    53	  docker run --rm \
+    54	  -v "$BACKUP_DIR:/backup:ro" \
+    55	  alpine:3.20 \
+    56	  sh -c "tar -tzf /backup/${VOLUME}.tar.gz >/dev/null"
+    57	
+    58	echo "Respaldo verificado: $VOLUME"
+    59	
+    60	done
+    61	
+    62	echo
+    63	echo "[3/5] Verificando archivos exportados..."
+    64	ls -lh "$BACKUP_DIR"
+    65	
+    66	echo
+    67	echo "[4/5] Eliminando únicamente los volúmenes del laboratorio..."
+    68	docker volume rm "${VOLUMES[@]}"
+    69	
+    70	echo
+    71	echo "[5/5] Creando nuevamente el volumen externo PITR..."
+    72	docker volume create dba-sgd-pitr_pitrdata
+    73	
+    74	echo
+    75	echo "=========================================="
+    76	echo " LIMPIEZA COMPLETADA"
+    77	echo "=========================================="
+    78	echo "Los archivos del proyecto y results/ se conservaron."
+    79	echo "Los datos anteriores están exportados en:"
+    80	echo "$BACKUP_DIR"
+    81	echo
+    82	echo "No se han iniciado todavía los contenedores."
+    83	echo "Revisa el resultado antes de reconstruir el laboratorio."
+=================== scripts/simular_incidente.sql
+     1	-- Proyecto: Laboratorio DBA - PITR PostgreSQL
+     2	-- Proposito: Simular un UPDATE accidental sin WHERE.
+     3	-- ADVERTENCIA: modifica todos los registros de postulaciones.
+     4	-- Ejecutar solo en el entorno de prueba preparado.
+     5	
+     6	BEGIN;
+     7	
+     8	UPDATE postulaciones
+     9	SET estado = 'rechazada',
+    10	    observacion = 'INCIDENTE: UPDATE accidental sin WHERE';
+    11	
+    12	-- Verificar el resultado antes de confirmar los cambios.
+    13	SELECT
+    14	    COUNT(*) AS total,
+    15	    COUNT(*) FILTER (
+    16	        WHERE estado = 'rechazada'
+    17	          AND observacion = 'INCIDENTE: UPDATE accidental sin WHERE'
+    18	    ) AS afectados
+    19	FROM postulaciones;
+    20	
+    21	COMMIT;
+=================== scripts/validar_fdw.sh
+     1	#!/usr/bin/env bash
+     2	set -euo pipefail
+     3	
+     4	cd "$(dirname "$0")/.."
+     5	mkdir -p results
+     6	
+     7	SALIDA="results/validacion_fdw.txt"
+     8	
+     9	SQL="
+    10	WITH origen AS (
+    11	    SELECT nombre_postulante, cargo, region, estado, observacion
+    12	    FROM origen.postulaciones
+    13	    WHERE observacion = 'POST_INCIDENTE_RECUPERABLE'
+    14	),
+    15	recuperacion AS (
+    16	    SELECT nombre_postulante, cargo, region, estado, observacion
+    17	    FROM public.postulaciones
+    18	    WHERE observacion = 'POST_INCIDENTE_RECUPERABLE'
+    19	),
+    20	diferencias AS (
+    21	    (SELECT * FROM origen EXCEPT ALL SELECT * FROM recuperacion)
+    22	    UNION ALL
+    23	    (SELECT * FROM recuperacion EXCEPT ALL SELECT * FROM origen)
+    24	)
+    25	SELECT
+    26	    (SELECT COUNT(*) FROM origen),
+    27	    (SELECT COUNT(*) FROM recuperacion),
+    28	    (SELECT COUNT(*) FROM diferencias);
+    29	"
+    30	
+    31	echo "Validación FDW - $(date '+%Y-%m-%d %H:%M:%S %Z')" | tee "$SALIDA"
+    32	echo "========================================" | tee -a "$SALIDA"
+    33	
+    34	RESULTADO=$(docker compose exec -T recovery psql \
+    35	    -X -v ON_ERROR_STOP=1 -U postgres -d postulaciones_db \
+    36	    -A -t -F '|' -c "$SQL")
+    37	
+    38	echo "origen|recuperacion|diferencias" | tee -a "$SALIDA"
+    39	echo "$RESULTADO" | tee -a "$SALIDA"
+    40	
+    41	if [[ "$RESULTADO" != "3|3|0" ]]; then
+    42	    echo "ERROR: la validación FDW no cumple los resultados esperados." | tee -a "$SALIDA"
+    43	    exit 1
+    44	fi
+    45	
+    46	echo "OK: tres registros comparados y cero diferencias." | tee -a "$SALIDA"
+=================== scripts/validar_fdw.sh.bak
+     1	#!/usr/bin/env bash
+     2	set -euo pipefail
+     3	
+     4	cd "$(dirname "$0")/.."
+     5	
+     6	SALIDA="results/validacion_fdw.txt"
+     7	
+     8	echo "Validación FDW - $(date '+%Y-%m-%d %H:%M:%S %Z')" | tee "$SALIDA"
+     9	echo "========================================" | tee -a "$SALIDA"
+    10	
+    11	docker compose exec -T recovery psql \
+    12	  -U postgres -d postulaciones_db \
+    13	  -c "SELECT
+    14	    (SELECT count(*) FROM origen.postulaciones
+    15	     WHERE observacion='POST_INCIDENTE_RECUPERABLE') AS origen,
+    16	    (SELECT count(*) FROM public.postulaciones
+    17	     WHERE observacion='POST_INCIDENTE_RECUPERABLE') AS recuperacion,
+    18	    (SELECT count(*) FROM origen.postulaciones o
+    19	     WHERE o.observacion='POST_INCIDENTE_RECUPERABLE'
+    20	       AND EXISTS (
+    21	         SELECT 1 FROM public.postulaciones r
+    22	         WHERE r.nombre_postulante=o.nombre_postulante
+    23	           AND r.cargo=o.cargo
+    24	           AND r.region=o.region
+    25	           AND r.estado=o.estado
+    26	           AND r.observacion=o.observacion
+    27	       )) AS coincidentes;" | tee -a "$SALIDA"

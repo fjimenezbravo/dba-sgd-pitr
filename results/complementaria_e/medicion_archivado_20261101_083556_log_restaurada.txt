@@ -1,0 +1,96 @@
+2026-11-01T11:36:35.578036715Z 
+2026-11-01T11:36:35.578055215Z PostgreSQL Database directory appears to contain a database; Skipping initialization
+2026-11-01T11:36:35.578056924Z 
+2026-11-01T11:36:35.589114757Z 2026-11-01 11:36:35.589 UTC [1] LOG:  starting PostgreSQL 17.11 (Debian 17.11-1.pgdg12+2) on aarch64-unknown-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit
+2026-11-01T11:36:35.589161465Z 2026-11-01 11:36:35.589 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2026-11-01T11:36:35.589164882Z 2026-11-01 11:36:35.589 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+2026-11-01T11:36:35.590077507Z 2026-11-01 11:36:35.590 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-11-01T11:36:35.591651340Z 2026-11-01 11:36:35.591 UTC [29] LOG:  database system was interrupted; last known up at 2026-11-01 11:36:01 UTC
+2026-11-01T11:36:35.629088632Z 2026-11-01 11:36:35.628 P00   INFO: archive-get command begin 2.60.0: [00000002.history, pg_wal/RECOVERYHISTORY] --exec-id=31-97b85d8d --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo
+2026-11-01T11:36:35.629250382Z 2026-11-01 11:36:35.629 P00   INFO: unable to find 00000002.history in the archive
+2026-11-01T11:36:35.629253507Z 2026-11-01 11:36:35.629 P00   INFO: archive-get command end: completed successfully (2ms)
+2026-11-01T11:36:35.629869424Z 2026-11-01 11:36:35.629 UTC [29] LOG:  starting backup recovery with redo LSN 0/4000028, checkpoint LSN 0/4000080, on timeline ID 1
+2026-11-01T11:36:35.634107424Z 2026-11-01 11:36:35.633 P00   INFO: archive-get command begin 2.60.0: [000000010000000000000004, pg_wal/RECOVERYXLOG] --exec-id=33-69d98c86 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo
+2026-11-01T11:36:35.645849757Z 2026-11-01 11:36:35.645 P00   INFO: found 000000010000000000000004 in the repo1: 17-1 archive
+2026-11-01T11:36:35.645869674Z 2026-11-01 11:36:35.645 P00   INFO: archive-get command end: completed successfully (13ms)
+2026-11-01T11:36:35.646561007Z 2026-11-01 11:36:35.646 UTC [29] LOG:  restored log file "000000010000000000000004" from archive
+2026-11-01T11:36:35.651209757Z 2026-11-01 11:36:35.651 UTC [29] LOG:  starting archive recovery
+2026-11-01T11:36:35.652810507Z 2026-11-01 11:36:35.652 UTC [29] LOG:  redo starts at 0/4000028
+2026-11-01T11:36:35.657262174Z 2026-11-01 11:36:35.657 P00   INFO: archive-get command begin 2.60.0: [000000010000000000000005, pg_wal/RECOVERYXLOG] --exec-id=35-91560ed7 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo
+2026-11-01T11:36:35.667451716Z 2026-11-01 11:36:35.667 P00   INFO: found 000000010000000000000005 in the repo1: 17-1 archive
+2026-11-01T11:36:35.667464757Z 2026-11-01 11:36:35.667 P00   INFO: archive-get command end: completed successfully (11ms)
+2026-11-01T11:36:35.668300674Z 2026-11-01 11:36:35.668 UTC [29] LOG:  restored log file "000000010000000000000005" from archive
+2026-11-01T11:36:35.677629674Z 2026-11-01 11:36:35.677 P00   INFO: archive-get command begin 2.60.0: [000000010000000000000006, pg_wal/RECOVERYXLOG] --exec-id=37-da079fb2 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo
+2026-11-01T11:36:35.687058716Z 2026-11-01 11:36:35.686 P00   INFO: found 000000010000000000000006 in the repo1: 17-1 archive
+2026-11-01T11:36:35.687067924Z 2026-11-01 11:36:35.686 P00   INFO: archive-get command end: completed successfully (10ms)
+2026-11-01T11:36:35.687968591Z 2026-11-01 11:36:35.687 UTC [29] LOG:  restored log file "000000010000000000000006" from archive
+2026-11-01T11:36:35.694196882Z 2026-11-01 11:36:35.694 UTC [29] LOG:  completed backup recovery with redo LSN 0/4000028 and end LSN 0/5000050
+2026-11-01T11:36:35.694206507Z 2026-11-01 11:36:35.694 UTC [29] LOG:  consistent recovery state reached at 0/5000050
+2026-11-01T11:36:35.694242674Z 2026-11-01 11:36:35.694 UTC [1] LOG:  database system is ready to accept read-only connections
+2026-11-01T11:36:35.716204341Z 2026-11-01 11:36:35.716 P00   INFO: archive-get command begin 2.60.0: [000000010000000000000007, pg_wal/RECOVERYXLOG] --exec-id=39-714d414a --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo
+2026-11-01T11:36:35.725340216Z 2026-11-01 11:36:35.725 P00   INFO: found 000000010000000000000007 in the repo1: 17-1 archive
+2026-11-01T11:36:35.725352382Z 2026-11-01 11:36:35.725 P00   INFO: archive-get command end: completed successfully (11ms)
+2026-11-01T11:36:35.726151591Z 2026-11-01 11:36:35.726 UTC [29] LOG:  restored log file "000000010000000000000007" from archive
+2026-11-01T11:36:35.750707841Z 2026-11-01 11:36:35.750 P00   INFO: archive-get command begin 2.60.0: [000000010000000000000008, pg_wal/RECOVERYXLOG] --exec-id=41-51beb081 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo
+2026-11-01T11:36:35.760874174Z 2026-11-01 11:36:35.760 P00   INFO: found 000000010000000000000008 in the repo1: 17-1 archive
+2026-11-01T11:36:35.760882216Z 2026-11-01 11:36:35.760 P00   INFO: archive-get command end: completed successfully (11ms)
+2026-11-01T11:36:35.761742132Z 2026-11-01 11:36:35.761 UTC [29] LOG:  restored log file "000000010000000000000008" from archive
+2026-11-01T11:36:35.786920966Z 2026-11-01 11:36:35.786 P00   INFO: archive-get command begin 2.60.0: [000000010000000000000009, pg_wal/RECOVERYXLOG] --exec-id=50-36ef1bcd --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo
+2026-11-01T11:36:35.795000091Z 2026-11-01 11:36:35.794 P00   INFO: found 000000010000000000000009 in the repo1: 17-1 archive
+2026-11-01T11:36:35.795013299Z 2026-11-01 11:36:35.794 P00   INFO: archive-get command end: completed successfully (9ms)
+2026-11-01T11:36:35.795666382Z 2026-11-01 11:36:35.795 UTC [29] LOG:  restored log file "000000010000000000000009" from archive
+2026-11-01T11:36:35.819007341Z 2026-11-01 11:36:35.818 P00   INFO: archive-get command begin 2.60.0: [00000001000000000000000A, pg_wal/RECOVERYXLOG] --exec-id=52-665b7935 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo
+2026-11-01T11:36:35.827186591Z 2026-11-01 11:36:35.827 P00   INFO: found 00000001000000000000000A in the repo1: 17-1 archive
+2026-11-01T11:36:35.827197174Z 2026-11-01 11:36:35.827 P00   INFO: archive-get command end: completed successfully (10ms)
+2026-11-01T11:36:35.827892007Z 2026-11-01 11:36:35.827 UTC [29] LOG:  restored log file "00000001000000000000000A" from archive
+2026-11-01T11:36:35.850771882Z 2026-11-01 11:36:35.850 P00   INFO: archive-get command begin 2.60.0: [00000001000000000000000B, pg_wal/RECOVERYXLOG] --exec-id=54-775b57a5 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo
+2026-11-01T11:36:35.859756674Z 2026-11-01 11:36:35.859 P00   INFO: found 00000001000000000000000B in the repo1: 17-1 archive
+2026-11-01T11:36:35.859766091Z 2026-11-01 11:36:35.859 P00   INFO: archive-get command end: completed successfully (10ms)
+2026-11-01T11:36:35.860648882Z 2026-11-01 11:36:35.860 UTC [29] LOG:  restored log file "00000001000000000000000B" from archive
+2026-11-01T11:36:35.888892632Z 2026-11-01 11:36:35.888 P00   INFO: archive-get command begin 2.60.0: [00000001000000000000000C, pg_wal/RECOVERYXLOG] --exec-id=56-bb36ec4c --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo
+2026-11-01T11:36:35.897138674Z 2026-11-01 11:36:35.897 P00   INFO: found 00000001000000000000000C in the repo1: 17-1 archive
+2026-11-01T11:36:35.897146132Z 2026-11-01 11:36:35.897 P00   INFO: archive-get command end: completed successfully (10ms)
+2026-11-01T11:36:35.897832882Z 2026-11-01 11:36:35.897 UTC [29] LOG:  restored log file "00000001000000000000000C" from archive
+2026-11-01T11:36:35.921426382Z 2026-11-01 11:36:35.921 P00   INFO: archive-get command begin 2.60.0: [00000001000000000000000D, pg_wal/RECOVERYXLOG] --exec-id=58-5f9d5887 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo
+2026-11-01T11:36:35.929709632Z 2026-11-01 11:36:35.929 P00   INFO: found 00000001000000000000000D in the repo1: 17-1 archive
+2026-11-01T11:36:35.929715007Z 2026-11-01 11:36:35.929 P00   INFO: archive-get command end: completed successfully (9ms)
+2026-11-01T11:36:35.930412549Z 2026-11-01 11:36:35.930 UTC [29] LOG:  restored log file "00000001000000000000000D" from archive
+2026-11-01T11:36:35.953357716Z 2026-11-01 11:36:35.953 P00   INFO: archive-get command begin 2.60.0: [00000001000000000000000E, pg_wal/RECOVERYXLOG] --exec-id=60-0a7bbb1d --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo
+2026-11-01T11:36:35.961549924Z 2026-11-01 11:36:35.961 P00   INFO: found 00000001000000000000000E in the repo1: 17-1 archive
+2026-11-01T11:36:35.961557799Z 2026-11-01 11:36:35.961 P00   INFO: archive-get command end: completed successfully (9ms)
+2026-11-01T11:36:35.962273507Z 2026-11-01 11:36:35.962 UTC [29] LOG:  restored log file "00000001000000000000000E" from archive
+2026-11-01T11:36:35.985042341Z 2026-11-01 11:36:35.984 P00   INFO: archive-get command begin 2.60.0: [00000001000000000000000F, pg_wal/RECOVERYXLOG] --exec-id=62-e3e6c376 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo
+2026-11-01T11:36:35.992874507Z 2026-11-01 11:36:35.992 P00   INFO: found 00000001000000000000000F in the repo1: 17-1 archive
+2026-11-01T11:36:35.992879674Z 2026-11-01 11:36:35.992 P00   INFO: archive-get command end: completed successfully (9ms)
+2026-11-01T11:36:35.993533632Z 2026-11-01 11:36:35.993 UTC [29] LOG:  restored log file "00000001000000000000000F" from archive
+2026-11-01T11:36:36.013727966Z 2026-11-01 11:36:36.013 P00   INFO: archive-get command begin 2.60.0: [000000010000000000000010, pg_wal/RECOVERYXLOG] --exec-id=64-14755f65 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo
+2026-11-01T11:36:36.021583341Z 2026-11-01 11:36:36.021 P00   INFO: found 000000010000000000000010 in the repo1: 17-1 archive
+2026-11-01T11:36:36.021589341Z 2026-11-01 11:36:36.021 P00   INFO: archive-get command end: completed successfully (9ms)
+2026-11-01T11:36:36.022205632Z 2026-11-01 11:36:36.022 UTC [29] LOG:  restored log file "000000010000000000000010" from archive
+2026-11-01T11:36:36.043595341Z 2026-11-01 11:36:36.043 P00   INFO: archive-get command begin 2.60.0: [000000010000000000000011, pg_wal/RECOVERYXLOG] --exec-id=66-d01ee9db --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo
+2026-11-01T11:36:36.043828132Z 2026-11-01 11:36:36.043 P00   INFO: unable to find 000000010000000000000011 in the archive
+2026-11-01T11:36:36.043830382Z 2026-11-01 11:36:36.043 P00   INFO: archive-get command end: completed successfully (1ms)
+2026-11-01T11:36:36.048066216Z 2026-11-01 11:36:36.048 P00   INFO: archive-get command begin 2.60.0: [000000010000000000000010, pg_wal/RECOVERYXLOG] --exec-id=68-cf074b32 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo
+2026-11-01T11:36:36.055929174Z 2026-11-01 11:36:36.055 P00   INFO: found 000000010000000000000010 in the repo1: 17-1 archive
+2026-11-01T11:36:36.055932591Z 2026-11-01 11:36:36.055 P00   INFO: archive-get command end: completed successfully (8ms)
+2026-11-01T11:36:36.056541632Z 2026-11-01 11:36:36.056 UTC [29] LOG:  restored log file "000000010000000000000010" from archive
+2026-11-01T11:36:36.066161882Z 2026-11-01 11:36:36.066 P00   INFO: archive-get command begin 2.60.0: [000000010000000000000011, pg_wal/RECOVERYXLOG] --exec-id=70-1fb3ea01 --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo
+2026-11-01T11:36:36.066376507Z 2026-11-01 11:36:36.066 P00   INFO: unable to find 000000010000000000000011 in the archive
+2026-11-01T11:36:36.066378841Z 2026-11-01 11:36:36.066 P00   INFO: archive-get command end: completed successfully (1ms)
+2026-11-01T11:36:36.066906216Z 2026-11-01 11:36:36.066 UTC [29] LOG:  redo done at 0/10FFFEC8 system usage: CPU: user: 0.08 s, system: 0.08 s, elapsed: 0.41 s
+2026-11-01T11:36:36.066908091Z 2026-11-01 11:36:36.066 UTC [29] LOG:  last completed transaction was at log time 2026-11-01 11:36:31.999326+00
+2026-11-01T11:36:36.070715216Z 2026-11-01 11:36:36.070 P00   INFO: archive-get command begin 2.60.0: [000000010000000000000010, pg_wal/RECOVERYXLOG] --exec-id=72-5373b53e --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo
+2026-11-01T11:36:36.078614466Z 2026-11-01 11:36:36.078 P00   INFO: found 000000010000000000000010 in the repo1: 17-1 archive
+2026-11-01T11:36:36.078618757Z 2026-11-01 11:36:36.078 P00   INFO: archive-get command end: completed successfully (9ms)
+2026-11-01T11:36:36.079269757Z 2026-11-01 11:36:36.079 UTC [29] LOG:  restored log file "000000010000000000000010" from archive
+2026-11-01T11:36:36.089483299Z 2026-11-01 11:36:36.089 P00   INFO: archive-get command begin 2.60.0: [00000002.history, pg_wal/RECOVERYHISTORY] --exec-id=74-c272c11d --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo
+2026-11-01T11:36:36.089698382Z 2026-11-01 11:36:36.089 P00   INFO: unable to find 00000002.history in the archive
+2026-11-01T11:36:36.089701466Z 2026-11-01 11:36:36.089 P00   INFO: archive-get command end: completed successfully (1ms)
+2026-11-01T11:36:36.090134091Z 2026-11-01 11:36:36.090 UTC [29] LOG:  selected new timeline ID: 2
+2026-11-01T11:36:36.104003216Z 2026-11-01 11:36:36.103 P00   INFO: archive-get command begin 2.60.0: [00000001.history, pg_wal/RECOVERYHISTORY] --exec-id=76-f593cb5d --log-level-console=info --log-level-file=detail --log-path=/var/log/pgbackrest --pg1-path=/var/lib/postgresql/data --process-max=2 --repo1-path=/var/lib/pgbackrest --stanza=archivo
+2026-11-01T11:36:36.104152882Z 2026-11-01 11:36:36.104 P00   INFO: unable to find 00000001.history in the archive
+2026-11-01T11:36:36.104154841Z 2026-11-01 11:36:36.104 P00   INFO: archive-get command end: completed successfully (2ms)
+2026-11-01T11:36:36.105449674Z 2026-11-01 11:36:36.105 UTC [29] LOG:  archive recovery complete
+2026-11-01T11:36:36.111344049Z 2026-11-01 11:36:36.111 UTC [27] LOG:  checkpoint starting: end-of-recovery immediate wait
+2026-11-01T11:36:36.195266424Z 2026-11-01 11:36:36.195 UTC [27] LOG:  checkpoint complete: wrote 16333 buffers (99.7%); 0 WAL file(s) added, 0 removed, 12 recycled; write=0.040 s, sync=0.039 s, total=0.085 s; sync files=18, longest=0.027 s, average=0.003 s; distance=212991 kB, estimate=212991 kB; lsn=0/10FFFF08, redo lsn=0/10FFFF08
+2026-11-01T11:36:36.197519466Z 2026-11-01 11:36:36.197 UTC [1] LOG:  database system is ready to accept connections

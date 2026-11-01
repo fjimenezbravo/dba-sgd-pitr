@@ -1,0 +1,18 @@
+## contenedores (no archivo)
+79cff4e522e0 dba-sgd-pitr-demo-postgres-1 dba-sgd-postgres:17-pgbackrest dba-sgd-pitr-demo running 2026-10-31 23:19:52 -0300 -03
+e84dc69cd59f dba-sgd-pitr-demo-recovery-1 dba-sgd-postgres:17-pgbackrest dba-sgd-pitr-demo running 2026-10-31 23:20:23 -0300 -03
+5a9a5bec916a dba-sgd-pitr-recovery-1 d7345a06b2d7 dba-sgd-pitr exited 2026-10-29 20:25:29 -0300 -03
+## volumenes (no archivo)
+dba-sgd-pitr-demo_pgbackrest_log 2026-11-01T02:19:52Z dba-sgd-pitr-demo
+dba-sgd-pitr-demo_pgbackrest_repo 2026-11-01T02:19:52Z dba-sgd-pitr-demo
+dba-sgd-pitr-demo_pgdata 2026-11-01T02:19:52Z dba-sgd-pitr-demo
+dba-sgd-pitr-demo_pitrdata 2026-11-01T02:20:22Z dba-sgd-pitr-demo
+dba-sgd-pitr_pgbackrest_log 2026-10-29T22:53:27Z dba-sgd-pitr
+dba-sgd-pitr_pgbackrest_repo 2026-10-29T22:53:27Z dba-sgd-pitr
+dba-sgd-pitr_pgdata 2026-10-29T22:53:27Z dba-sgd-pitr
+dba-sgd-pitr_pitrdata 2026-10-29T22:49:44Z 
+## demo postgres
+pgbackrest --stanza=main archive-push %p|1min|10|4|000000010000000000000009|2026-11-01 11:06:30.596824+00|000000010000000000000001|2026-11-01 02:19:52.409649+00
+2026-11-01 11:00:30.134465+00|103|7347b41ae4ea5c769bd74009a1661384
+## auto.conf
+a6083d6b0e13d27479a12386750ccd05  /var/lib/postgresql/data/postgresql.auto.conf
